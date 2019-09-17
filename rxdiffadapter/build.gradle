@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.novoda.bintray-release'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.core:core-ktx:1.1.0'
+    implementation "io.reactivex.rxjava2:rxjava:2.2.10"
+    implementation project(':delegates')
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
+}
+
+publish {
+    def groupProjectID = 'com.revolut.recyclerkit'
+    def artifactProjectID = 'rxdiffadapter'
+    def publishVersionID = '1.0'
+
+    userOrg = 'revolut-mobile'
+    repoName = 'RecyclerKit'
+    groupId = groupProjectID
+    artifactId = artifactProjectID
+    publishVersion = publishVersionID
+    desc = "RecyclerKit RxDiffAdapter"
+    website = "https://github.com/revolut-mobile/RecyclerKit"
+
+}

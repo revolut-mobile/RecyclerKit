@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.revolut.recyclerkit.delegates.DelegatesManager
-import com.revolut.recyclerkit.delegates.DiffAdapter
 import com.revolut.recyclerkit.sample.delegates.ImageTextDelegate
+import com.revolut.rxdiffadapter.RxDiffAdapter
 import com.thedeanda.lorem.LoremIpsum
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     }.toMutableList()
 
     private val adapter by lazy {
-        DiffAdapter(DelegatesManager()
+        RxDiffAdapter(async = true, delegatesManager = DelegatesManager()
             .addDelegate(
                 ImageTextDelegate { model -> onClick(model) }
             ))

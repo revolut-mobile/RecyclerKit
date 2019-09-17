@@ -35,4 +35,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation project(':animators')
     implementation project(':delegates')
+    implementation project(':rxdiffadapter')
 }
