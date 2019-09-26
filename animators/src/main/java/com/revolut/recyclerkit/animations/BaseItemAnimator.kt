@@ -30,15 +30,22 @@ import java.util.*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *
+ */
+/**
+ * @param supportsChangeAnimations - true: default change animations will be applied for ViewHolders
+ * not implementing AnimatedChangeViewHolder, false: change animations are only applied for ViewHolders implementing AnimatedChangeViewHolder,
+ * if they return false in canAnimateChange callback.
+ * @param withCrossFade - if true - then default change animation will cross fade new view onto old view (old view alpha animated from 1.0 to 0.1),
+ * if false: new view will fade in atop an old view (old view alpha is not animated).
  */
 abstract class BaseItemAnimator(
-    private val withCrossFade: Boolean = true
+    protected val interpolator: Interpolator = DecelerateInterpolator(),
+    private val withCrossFade: Boolean = true,
+    supportsChangeAnimations: Boolean = false
 ) : SimpleItemAnimator() {
 
     protected var addAnimations = ArrayList<ViewHolder>()
     protected var removeAnimations = ArrayList<ViewHolder>()
-    protected var interpolator: Interpolator = DecelerateInterpolator()
     private val pendingRemovals = ArrayList<ViewHolder>()
     private val pendingAdditions = ArrayList<ViewHolder>()
     private val pendingMoves = ArrayList<MoveInfo>()
@@ -50,7 +57,7 @@ abstract class BaseItemAnimator(
     private val changeAnimations = ArrayList<ViewHolder>()
 
     init {
-        supportsChangeAnimations = false
+        this.supportsChangeAnimations = supportsChangeAnimations
     }
 
     override fun canReuseUpdatedViewHolder(viewHolder: ViewHolder, payloads: List<Any>): Boolean {

@@ -17,6 +17,7 @@ package com.revolut.recyclerkit.animations
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -41,11 +42,15 @@ import androidx.recyclerview.widget.RecyclerView
  *
  */
 
-class FadeInAnimator(interpolator: Interpolator? = null) : BaseItemAnimator() {
-
-    init {
-        interpolator?.let { this.interpolator = it }
-    }
+class FadeInAnimator(
+    interpolator: Interpolator = DecelerateInterpolator(),
+    withCrossFade: Boolean = true,
+    supportsChangeAnimations: Boolean = false
+) : BaseItemAnimator(
+    interpolator = interpolator,
+    withCrossFade = withCrossFade,
+    supportsChangeAnimations = supportsChangeAnimations
+) {
 
     override fun animateRemoveImpl(holder: RecyclerView.ViewHolder) {
         ViewCompat.animate(holder.itemView)
