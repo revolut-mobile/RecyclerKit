@@ -17,8 +17,15 @@ import com.revolut.recyclerkit.animations.holder.AnimateChangeViewHolder
 import com.revolut.recyclerkit.delegates.BaseRecyclerViewDelegate
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.sample.R
+import com.revolut.recyclerkit.sample.delegates.ImageFixedSizeTextDelegate.Model
+import com.revolut.recyclerkit.sample.delegates.ImageFixedSizeTextDelegate.ViewHolder
 import kotlinx.android.synthetic.main.image_fixed_size_text_delegate.view.*
 
+/**
+ * This Delegate animates text change itself not relying on default RecyclerView cross-fade.
+ * Take a look at [Model.calculatePayload] and [ViewHolder.canAnimateChange] to
+ * understand how payloads are calculated and how they are used to decide if ViewHolder should perform animation itself.
+ */
 class ImageFixedSizeTextDelegate(
     val onClickListener: (Model) -> Unit
 ) : BaseRecyclerViewDelegate<ImageFixedSizeTextDelegate.Model, ImageFixedSizeTextDelegate.ViewHolder>(

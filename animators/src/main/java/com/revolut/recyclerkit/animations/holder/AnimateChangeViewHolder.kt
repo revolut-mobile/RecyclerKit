@@ -4,7 +4,6 @@ import androidx.recyclerview.widget.RecyclerView
 
 /*
  * Copyright (C) 2019 Yatsinar
- * Copyright (C) 2014 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +17,22 @@ import androidx.recyclerview.widget.RecyclerView
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *
  */
 
 interface AnimateChangeViewHolder {
 
+    /**
+     * @return true if this set of payloads can be animated inside onBindViewHolder.
+     * false will force RecyclerView to create additional ViewHolder and perform
+     * cross-fade between two states.
+     */
     fun canAnimateChange(payloads: List<Any>): Boolean
 
+    /**
+     * Called whenever RecyclerView needs all animations to stop.
+     * It's very important to stop them upon request as detaching Views aren't done
+     * during animation and RecyclerView might loose track of attached views if animations aren't finished.
+     */
     fun endChangeAnimation(holder: RecyclerView.ViewHolder)
 
 }
