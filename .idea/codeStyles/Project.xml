@@ -2,9 +2,6 @@
   <code_scheme name="Project" version="173">
     <option name="RIGHT_MARGIN" value="180" />
     <option name="FORMATTER_TAGS_ENABLED" value="true" />
-    <AndroidXmlCodeStyleSettings>
-      <option name="USE_CUSTOM_SETTINGS" value="false" />
-    </AndroidXmlCodeStyleSettings>
     <JavaCodeStyleSettings>
       <option name="GENERATE_FINAL_LOCALS" value="true" />
       <option name="DO_NOT_WRAP_AFTER_SINGLE_ANNOTATION" value="true" />
