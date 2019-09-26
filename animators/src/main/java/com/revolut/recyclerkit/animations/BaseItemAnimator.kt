@@ -33,7 +33,7 @@ import java.util.*
  *
  */
 abstract class BaseItemAnimator(
-    private val withCrossFade: Boolean = false
+    private val withCrossFade: Boolean = true
 ) : SimpleItemAnimator() {
 
     protected var addAnimations = ArrayList<ViewHolder>()
