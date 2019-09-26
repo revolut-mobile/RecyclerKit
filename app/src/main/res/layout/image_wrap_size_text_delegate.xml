@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="15dp">
+    android:background="@android:color/white"
+>
 
     <ImageView
         android:id="@+id/imageView"
@@ -16,7 +17,8 @@
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars[11]" tools:ignore="ContentDescription" />
+        tools:srcCompat="@tools:sample/avatars[11]"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/textView"

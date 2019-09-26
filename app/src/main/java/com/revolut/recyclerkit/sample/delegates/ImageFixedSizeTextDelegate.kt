@@ -11,21 +11,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
+import com.revolut.decorations.dividers.DecoratedItem
+import com.revolut.decorations.dividers.delegates.DividerDecorationDelegate
 import com.revolut.recyclerkit.animations.holder.AnimateChangeViewHolder
 import com.revolut.recyclerkit.delegates.BaseRecyclerViewDelegate
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.sample.R
-import kotlinx.android.synthetic.main.image_text_delegate.view.*
+import kotlinx.android.synthetic.main.image_fixed_size_text_delegate.view.*
 
-class ImageTextDelegate(
+class ImageFixedSizeTextDelegate(
     val onClickListener: (Model) -> Unit
-) : BaseRecyclerViewDelegate<ImageTextDelegate.Model, ImageTextDelegate.ViewHolder>(
-    viewType = R.layout.image_text_delegate,
+) : BaseRecyclerViewDelegate<ImageFixedSizeTextDelegate.Model, ImageFixedSizeTextDelegate.ViewHolder>(
+    viewType = R.layout.image_fixed_size_text_delegate,
     rule = { _, data -> data is Model }
 ) {
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder =
-        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.image_text_delegate, parent, false))
+        ViewHolder(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, data: Model, pos: Int, payloads: List<Any>?) {
         payloads?.filterIsInstance<Payload>()
@@ -36,7 +38,6 @@ class ImageTextDelegate(
 
     private fun ViewHolder.applyPayload(payload: Payload) {
         payload.imageUrl?.let { imageView.loadImage(it) }
-
         payload.text?.let {
             textView.text = it
             textView.startAnimation(AnimationSet(true).apply {
@@ -73,8 +74,12 @@ class ImageTextDelegate(
     data class Model(
         override val listId: String,
         val text: CharSequence,
-        val imageUrl: String
-    ) : ListItem {
+        val imageUrl: String,
+        override var topDecoration: DividerDecorationDelegate? = null,
+        override var bottomDecoration: DividerDecorationDelegate? = null,
+        override var leftDecoration: DividerDecorationDelegate? = null,
+        override var rightDecoration: DividerDecorationDelegate? = null
+    ) : ListItem, DecoratedItem {
 
         override fun calculatePayload(oldItem: Any): Any? {
             if (oldItem !is Model) return null
