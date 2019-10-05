@@ -13,6 +13,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import com.revolut.decorations.dividers.DecoratedItem
 import com.revolut.decorations.dividers.delegates.DividerDecorationDelegate
+import com.revolut.decorations.frames.DecoratedObject
+import com.revolut.decorations.frames.delegates.FrameDecorationDelegate
 import com.revolut.recyclerkit.animations.holder.AnimateChangeViewHolder
 import com.revolut.recyclerkit.delegates.BaseRecyclerViewDelegate
 import com.revolut.recyclerkit.delegates.ListItem
@@ -85,8 +87,9 @@ class ImageFixedSizeTextDelegate(
         override var topDecoration: DividerDecorationDelegate? = null,
         override var bottomDecoration: DividerDecorationDelegate? = null,
         override var leftDecoration: DividerDecorationDelegate? = null,
-        override var rightDecoration: DividerDecorationDelegate? = null
-    ) : ListItem, DecoratedItem {
+        override var rightDecoration: DividerDecorationDelegate? = null,
+        override var frameDecoration: FrameDecorationDelegate? = null
+    ) : ListItem, DecoratedItem, DecoratedObject {
 
         override fun calculatePayload(oldItem: Any): Any? {
             if (oldItem !is Model) return null

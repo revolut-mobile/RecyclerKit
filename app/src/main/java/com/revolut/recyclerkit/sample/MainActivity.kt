@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.revolut.decorations.dividers.DelegatesDividerItemDecoration
+import com.revolut.decorations.frames.DelegatesFrameItemDecoration
 import com.revolut.recyclerkit.animations.FadeInAnimator
 import com.revolut.recyclerkit.delegates.DelegatesManager
 import com.revolut.recyclerkit.delegates.ListItem
@@ -39,6 +40,18 @@ class MainActivity : AppCompatActivity() {
                 topDecoration = ShadowDecorations.TOP_SHADOW_DECORATION,
                 bottomDecoration = ShadowDecorations.BOTTOM_SHADOW_DECORATION
             )
+        }.toTypedArray<ListItem>(),
+        *(10..15).map { index ->
+            ImageFixedSizeTextDelegate.Model(
+                listId = index.toString(),
+                text = LoremIpsum.getInstance().getParagraphs(1, 1),
+                imageUrl = "https://picsum.photos/200",
+                leftDecoration = PADDING_16DP,
+                rightDecoration = PADDING_16DP,
+                topDecoration = PADDING_16DP,
+                bottomDecoration = PADDING_16DP,
+                frameDecoration = ROUND_CORNER_DECORATION
+            )
         }.toTypedArray<ListItem>()
     ).toMutableList()
 
@@ -59,6 +72,7 @@ class MainActivity : AppCompatActivity() {
             adapter = this@MainActivity.adapter
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(DelegatesDividerItemDecoration())
+            addItemDecoration(DelegatesFrameItemDecoration())
             itemAnimator = FadeInAnimator(supportsChangeAnimations = true)
         }
     }
