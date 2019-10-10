@@ -13,7 +13,7 @@ import com.revolut.decorations.R
 import com.revolut.decorations.dividers.delegates.BaseDividerDecorationDelegate
 
 /*
- * Copyright (C) 2019 Yatsinar
+ * Copyright (C) 2019 Revolut
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

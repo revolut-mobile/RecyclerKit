@@ -4,7 +4,7 @@ import android.view.View
 import androidx.core.view.ViewCompat
 
 /*
- * Copyright (C) 2019 Yatsinar
+ * Copyright (C) 2019 Revolut
  * Copyright (C) 2018 Wasabeef
  * Copyright (C) 2014 The Android Open Source Project
  *

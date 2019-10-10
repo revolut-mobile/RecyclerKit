@@ -5,7 +5,7 @@ RecyclerKit
 License
 -------
 
-    Copyright 2019 Yatsinar
+    Copyright 2019 Revolut
     Copyright 2018 Wasabeef
 
     Licensed under the Apache License, Version 2.0 (the "License");

@@ -14,7 +14,7 @@ import com.revolut.recyclerkit.animations.internal.clear
 import java.util.*
 
 /*
- * Copyright (C) 2019 Yatsinar
+ * Copyright (C) 2019 Revolut
  * Copyright (C) 2018 Wasabeef
  * Copyright (C) 2014 The Android Open Source Project
  *
