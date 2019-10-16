@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
-import com.revolut.decorations.dividers.DecoratedItem
+import com.revolut.decorations.dividers.DividerDecoratedItem
 import com.revolut.decorations.dividers.delegates.DividerDecorationDelegate
-import com.revolut.decorations.frames.DecoratedObject
+import com.revolut.decorations.frames.FrameDecoratedItem
 import com.revolut.decorations.frames.delegates.FrameDecorationDelegate
 import com.revolut.recyclerkit.animations.holder.AnimateChangeViewHolder
 import com.revolut.recyclerkit.delegates.BaseRecyclerViewDelegate
@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.image_fixed_size_text_delegate.view.*
  */
 class ImageFixedSizeTextDelegate(
     val onClickListener: (Model) -> Unit
-) : BaseRecyclerViewDelegate<ImageFixedSizeTextDelegate.Model, ImageFixedSizeTextDelegate.ViewHolder>(
+) : BaseRecyclerViewDelegate<Model, ViewHolder>(
     viewType = R.layout.image_fixed_size_text_delegate,
     rule = { _, data -> data is Model }
 ) {
@@ -89,7 +89,7 @@ class ImageFixedSizeTextDelegate(
         override var leftDecoration: DividerDecorationDelegate? = null,
         override var rightDecoration: DividerDecorationDelegate? = null,
         override var frameDecoration: FrameDecorationDelegate? = null
-    ) : ListItem, DecoratedItem, DecoratedObject {
+    ) : ListItem, DividerDecoratedItem, FrameDecoratedItem {
 
         override fun calculatePayload(oldItem: Any): Any? {
             if (oldItem !is Model) return null

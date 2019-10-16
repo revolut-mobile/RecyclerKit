@@ -19,7 +19,7 @@ import com.revolut.decorations.dividers.delegates.DividerDecorationDelegate
  *
  */
 
-interface DecoratedItem {
+interface DividerDecoratedItem {
 
     var topDecoration: DividerDecorationDelegate?
 

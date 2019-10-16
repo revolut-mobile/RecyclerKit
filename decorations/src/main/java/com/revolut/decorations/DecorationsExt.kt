@@ -1,6 +1,7 @@
-package com.revolut.decorations.frames
+package com.revolut.decorations
 
-import com.revolut.decorations.frames.delegates.FrameDecorationDelegate
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 
 /*
  * Copyright (C) 2019 Revolut
@@ -18,8 +19,10 @@ import com.revolut.decorations.frames.delegates.FrameDecorationDelegate
  * limitations under the License.
  *
  */
-interface DecoratedObject {
 
-    var frameDecoration: FrameDecorationDelegate?
-
+internal fun RecyclerView.forEachViewAdapterPosition(block: (view: View, pos: Int) -> Unit) = (0 until childCount).map { getChildAt(it) }.forEach { view ->
+    getChildAdapterPosition(view).takeUnless { pos -> pos == RecyclerView.NO_POSITION }?.let { pos ->
+        block(view, pos)
+    }
 }
+

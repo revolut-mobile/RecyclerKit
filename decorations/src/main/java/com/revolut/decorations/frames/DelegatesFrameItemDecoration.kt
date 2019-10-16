@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.revolut.decorations.forEachViewAdapterPosition
 import com.revolut.recyclerkit.delegates.AbsRecyclerDelegatesAdapter
 
 /*
@@ -24,32 +25,22 @@ import com.revolut.recyclerkit.delegates.AbsRecyclerDelegatesAdapter
  */
 class DelegatesFrameItemDecoration : RecyclerView.ItemDecoration() {
 
+    private val rect = Rect()
+
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDrawOver(canvas, parent, state)
+        val adapter = parent.adapter as? AbsRecyclerDelegatesAdapter ?: return
 
-        val childCount = parent.childCount
+        canvas.save()
+        rect.set(parent.paddingLeft, parent.paddingTop, parent.width - parent.paddingRight, parent.height - parent.paddingBottom)
+        canvas.clipRect(rect)
 
-        val adapter = parent.adapter
-
-        if (adapter != null && adapter is AbsRecyclerDelegatesAdapter) {
-            canvas.save()
-            canvas.clipRect(Rect(parent.paddingLeft, parent.paddingTop, parent.width - parent.paddingRight, parent.height - parent.paddingBottom))
-            (0 until childCount).forEach {
-                val view = parent.getChildAt(it)
-
-                val pos = parent.getChildAdapterPosition(view)
-                if (pos == RecyclerView.NO_POSITION) {
-                    return
-                }
-
-                val item = adapter.getItem(pos)
-
-                if (item is DecoratedObject) {
-                    item.frameDecoration?.onDrawOver(canvas, view, parent, state)
-                }
+        parent.forEachViewAdapterPosition { view, pos ->
+            (adapter.getItem(pos) as? FrameDecoratedItem)?.run {
+                frameDecoration?.onDrawOver(canvas, view, parent, state)
             }
-            canvas.restore()
         }
+        canvas.restore()
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
@@ -64,7 +55,7 @@ class DelegatesFrameItemDecoration : RecyclerView.ItemDecoration() {
 
             val item = adapter.getItem(pos)
 
-            if (item is DecoratedObject) {
+            if (item is FrameDecoratedItem) {
                 item.frameDecoration?.getItemOffsets(outRect, view, parent, state)
             }
         }

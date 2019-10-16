@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
-import com.revolut.decorations.dividers.DecoratedItem
+import com.revolut.decorations.dividers.DividerDecoratedItem
 import com.revolut.decorations.dividers.delegates.DividerDecorationDelegate
 import com.revolut.recyclerkit.delegates.BaseRecyclerViewDelegate
 import com.revolut.recyclerkit.delegates.ListItem
@@ -52,7 +52,7 @@ class ImageWrapSizeTextDelegate(
         override var bottomDecoration: DividerDecorationDelegate? = null,
         override var leftDecoration: DividerDecorationDelegate? = null,
         override var rightDecoration: DividerDecorationDelegate? = null
-    ) : ListItem, DecoratedItem
+    ) : ListItem, DividerDecoratedItem
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textView: TextView = itemView.textView
