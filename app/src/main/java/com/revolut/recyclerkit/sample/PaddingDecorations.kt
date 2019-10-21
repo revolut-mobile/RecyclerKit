@@ -6,7 +6,7 @@ object PaddingDecorations {
 
     val PADDING_16DP = PaddingDecorationDelegate(
         padding = R.dimen.dp_16,
-        backgroundColor = android.R.color.white
+        backgroundColor = R.color.grayTranslucent
     )
 
 }

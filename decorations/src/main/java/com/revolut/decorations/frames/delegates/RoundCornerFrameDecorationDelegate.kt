@@ -34,7 +34,8 @@ class RoundCornerFrameDecorationDelegate(
     @DimenRes private val bottomPadding: Int = R.dimen.zero_padding_decoration,
     @DimenRes private val leftPadding: Int = R.dimen.zero_padding_decoration,
     @DimenRes private val roundRadiusRes: Int = R.dimen.dp_8,
-    private val shouldOverridePaddings: Boolean = true,
+    private val shouldOverridePadding: Boolean = true,
+    @DimenRes private val minHeight: Int = R.dimen.zero_padding_decoration,
     @DrawableRes private val backgroundRes: Int
 ) : BaseFrameDecorationDelegate() {
 
@@ -74,14 +75,14 @@ class RoundCornerFrameDecorationDelegate(
         val paddingLeft = resources.getDimensionPixelSize(leftPadding)
         val paddingRight = resources.getDimensionPixelSize(rightPadding)
 
-        if (shouldOverridePaddings && !paddedViews.contains(view)) {
+        if (shouldOverridePadding && !paddedViews.contains(view)) {
             view.setPadding(
                 paddingLeft,
                 paddingTop,
                 paddingRight,
                 paddingBottom
             )
-            //view.minimumHeight = UiUtils.dpToPx(view.resources, 76)
+            view.minimumHeight = resources.getDimensionPixelSize(minHeight)
             paddedViews.add(view)
         }
     }

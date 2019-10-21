@@ -15,6 +15,8 @@ import com.revolut.decorations.dividers.DividerDecoratedItem
 import com.revolut.decorations.dividers.delegates.DividerDecorationDelegate
 import com.revolut.decorations.frames.FrameDecoratedItem
 import com.revolut.decorations.frames.delegates.FrameDecorationDelegate
+import com.revolut.decorations.overlay.OverlayDecoratedItem
+import com.revolut.decorations.overlay.delegates.OverlayDecorationDelegate
 import com.revolut.recyclerkit.animations.holder.AnimateChangeViewHolder
 import com.revolut.recyclerkit.delegates.BaseRecyclerViewDelegate
 import com.revolut.recyclerkit.delegates.ListItem
@@ -88,8 +90,9 @@ class ImageFixedSizeTextDelegate(
         override var bottomDecoration: DividerDecorationDelegate? = null,
         override var leftDecoration: DividerDecorationDelegate? = null,
         override var rightDecoration: DividerDecorationDelegate? = null,
-        override var frameDecoration: FrameDecorationDelegate? = null
-    ) : ListItem, DividerDecoratedItem, FrameDecoratedItem {
+        override var frameDecoration: FrameDecorationDelegate? = null,
+        override var overlayColorDecoration: OverlayDecorationDelegate? = null
+    ) : ListItem, DividerDecoratedItem, FrameDecoratedItem, OverlayDecoratedItem {
 
         override fun calculatePayload(oldItem: Any): Any? {
             if (oldItem !is Model) return null

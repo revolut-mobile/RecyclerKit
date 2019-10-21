@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.revolut.decorations.dividers.DelegatesDividerItemDecoration
 import com.revolut.decorations.frames.DelegatesFrameItemDecoration
+import com.revolut.decorations.overlay.DelegatesOverlayItemDecoration
 import com.revolut.recyclerkit.animations.FadeInAnimator
 import com.revolut.recyclerkit.delegates.DelegatesManager
 import com.revolut.recyclerkit.delegates.ListItem
@@ -16,7 +17,6 @@ import com.thedeanda.lorem.LoremIpsum
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-
 
     private val items: MutableList<ListItem> = listOf(
         *(0..5).map { index ->
@@ -52,6 +52,19 @@ class MainActivity : AppCompatActivity() {
                 bottomDecoration = PADDING_16DP,
                 frameDecoration = ROUND_CORNER_DECORATION
             )
+        }.toTypedArray<ListItem>(),
+        *(16..20).map { index ->
+            ImageFixedSizeTextDelegate.Model(
+                listId = index.toString(),
+                text = LoremIpsum.getInstance().getParagraphs(1, 1),
+                imageUrl = "https://picsum.photos/200",
+                leftDecoration = PADDING_16DP,
+                rightDecoration = PADDING_16DP,
+                topDecoration = PADDING_16DP,
+                bottomDecoration = PADDING_16DP,
+                frameDecoration = ROUND_CORNER_DECORATION,
+                overlayColorDecoration = GRAY_OVERLAY_DECORATION
+            )
         }.toTypedArray<ListItem>()
     ).toMutableList()
 
@@ -73,6 +86,7 @@ class MainActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(DelegatesDividerItemDecoration())
             addItemDecoration(DelegatesFrameItemDecoration())
+            addItemDecoration(DelegatesOverlayItemDecoration())
             itemAnimator = FadeInAnimator(supportsChangeAnimations = true)
         }
     }
@@ -81,7 +95,6 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         adapter.setItems(ArrayList(items))
     }
-
 
     private fun onClick(model: ImageWrapSizeTextDelegate.Model) {
         items[model.listId.toInt()] = model.copy(
