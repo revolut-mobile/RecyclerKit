@@ -5,12 +5,14 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.View
+import androidx.annotation.AttrRes
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 import com.revolut.decorations.dividers.delegates.BaseDividerDecorationDelegate
+import com.revolut.decorations.resolveColorAttribute
 
 /*
  * Copyright (C) 2019 Revolut
@@ -31,7 +33,7 @@ import com.revolut.decorations.dividers.delegates.BaseDividerDecorationDelegate
 
 data class PaddingDecorationDelegate constructor(
     @DimenRes val padding: Int,
-    @ColorRes val backgroundColor: Int
+    val background: PaddingDecorationBackground
 ) : BaseDividerDecorationDelegate() {
 
     private val paddingPx by lazy {
@@ -41,7 +43,12 @@ data class PaddingDecorationDelegate constructor(
     private val backgroundPaint: Paint? by lazy {
         val paintColor = ResourcesCompat.getColor(
             resources,
-            backgroundColor,
+            when (background) {
+                is PaddingDecorationBackground.ColorResource ->
+                    background.colorRes
+                is PaddingDecorationBackground.ColorAttribute ->
+                    context.resolveColorAttribute(background.colorAttr)
+            },
             context.theme
         )
 
@@ -141,5 +148,17 @@ data class PaddingDecorationDelegate constructor(
 
         canvas.drawRect(rect, this)
     }
+
+}
+
+sealed class PaddingDecorationBackground {
+
+    data class ColorResource(
+        @ColorRes val colorRes: Int
+    ) : PaddingDecorationBackground()
+
+    data class ColorAttribute(
+        @AttrRes val colorAttr: Int
+    ) : PaddingDecorationBackground()
 
 }

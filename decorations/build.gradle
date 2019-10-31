@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.novoda.bintray-release'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -33,4 +35,19 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
+}
+
+publish {
+    def groupProjectID = 'com.revolut.recyclerkit'
+    def artifactProjectID = 'decorations'
+    def publishVersionID = '1.0.1'
+
+    userOrg = 'revolut-mobile'
+    repoName = 'RecyclerKit'
+    groupId = groupProjectID
+    artifactId = artifactProjectID
+    publishVersion = publishVersionID
+    desc = "RecyclerKit Decorations"
+    website = "https://github.com/revolut-mobile/RecyclerKit"
+
 }

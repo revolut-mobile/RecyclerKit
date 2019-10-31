@@ -24,7 +24,7 @@ class ImageWrapSizeTextDelegate(
 ) {
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder =
-        ViewHolder(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
+        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.image_wrap_size_text_delegate, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, data: Model, pos: Int, payloads: List<Any>?) {
         holder.takeIf { payloads.isNullOrEmpty() }?.applyData(data)
