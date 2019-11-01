@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
  */
 
 abstract class AbsRecyclerDelegatesAdapter(
-    private var delegatesManager: DelegatesManager? = null
+    val delegatesManager: DelegatesManager? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =

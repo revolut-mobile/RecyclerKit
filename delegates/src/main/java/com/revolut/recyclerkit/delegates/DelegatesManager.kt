@@ -22,9 +22,15 @@ import java.util.*
  *
  */
 
-class DelegatesManager {
+class DelegatesManager(
+    delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>? = null
+) {
 
     private val delegates = LinkedHashMap<Int, RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>()
+
+    init {
+        delegates?.let { addDelegates(it) }
+    }
 
     fun getDelegateFor(viewType: Int): RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder> {
         return delegates[viewType] ?: throw IllegalStateException("No delegate found for viewType $viewType")
@@ -41,6 +47,11 @@ class DelegatesManager {
 
     fun addDelegate(delegate: RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>): DelegatesManager {
         delegates[delegate.viewType] = delegate
+        return this
+    }
+
+    fun addDelegates(delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>): DelegatesManager {
+        delegates.forEach { addDelegate(it) }
         return this
     }
 
