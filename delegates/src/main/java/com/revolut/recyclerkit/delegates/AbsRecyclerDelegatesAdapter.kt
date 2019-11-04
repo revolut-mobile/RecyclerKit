@@ -23,17 +23,16 @@ import androidx.recyclerview.widget.RecyclerView
  */
 
 abstract class AbsRecyclerDelegatesAdapter(
-    val delegatesManager: DelegatesManager? = null
+    val delegatesManager: DelegatesManager = DelegatesManager()
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
-        delegatesManager?.getDelegateFor(viewType)?.onCreateViewHolder(parent) ?: throw IllegalStateException(MANAGER_IS_NOT_SET_MSG)
+        delegatesManager.getDelegateFor(viewType).onCreateViewHolder(parent)
 
     @Suppress("unchecked_cast")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
-        (delegatesManager?.getDelegateFor(holder.itemViewType) as? RecyclerViewDelegate<ListItem, RecyclerView.ViewHolder>)
-            ?.onBindViewHolder(holder, getItem(position), position, payloads)
-            ?: throw IllegalStateException(MANAGER_IS_NOT_SET_MSG)
+        (delegatesManager.getDelegateFor(holder.itemViewType) as RecyclerViewDelegate<ListItem, RecyclerView.ViewHolder>)
+            .onBindViewHolder(holder, getItem(position), position, payloads)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -42,18 +41,12 @@ abstract class AbsRecyclerDelegatesAdapter(
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         holder.apply {
-            delegatesManager?.getDelegateFor(this.itemViewType)?.onViewRecycled(this)
-                ?: throw IllegalStateException(MANAGER_IS_NOT_SET_MSG)
+            delegatesManager.getDelegateFor(this.itemViewType)?.onViewRecycled(this)
         }
     }
 
-    override fun getItemViewType(position: Int): Int = delegatesManager
-        ?.getViewTypeFor(position, getItem(position) as Any) ?: throw IllegalStateException(MANAGER_IS_NOT_SET_MSG)
+    override fun getItemViewType(position: Int): Int = delegatesManager.getViewTypeFor(position, getItem(position) as Any)
 
     abstract fun getItem(position: Int): ListItem
-
-    companion object {
-        const val MANAGER_IS_NOT_SET_MSG = "AdapterDelegatesManager is not set"
-    }
 
 }
