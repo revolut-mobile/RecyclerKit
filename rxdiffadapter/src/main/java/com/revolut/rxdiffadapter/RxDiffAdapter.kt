@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit
 * if last zero item was completely visible (i.e. zero scroll).
 */
 open class RxDiffAdapter constructor(
-    delegatesManager: DelegatesManager? = null,
+    delegatesManager: DelegatesManager = DelegatesManager(),
     val async: Boolean = false,
     private val autoScrollToTop: Boolean = false,
     private val detectMoves: Boolean = true

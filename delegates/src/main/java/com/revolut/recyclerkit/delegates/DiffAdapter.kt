@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.DiffUtil
  */
 
 class DiffAdapter(
-    delegatesManager: DelegatesManager? = null
+    delegatesManager: DelegatesManager = DelegatesManager()
 ) : AbsRecyclerDelegatesAdapter(delegatesManager) {
 
     private val differ: AsyncListDiffer<ListItem> = AsyncListDiffer(

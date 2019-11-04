@@ -40,7 +40,7 @@ dependencies {
 publish {
     def groupProjectID = 'com.revolut.recyclerkit'
     def artifactProjectID = 'rxdiffadapter'
-    def publishVersionID = '1.0.1'
+    def publishVersionID = '1.0.2'
 
     userOrg = 'revolut-mobile'
     repoName = 'RecyclerKit'
