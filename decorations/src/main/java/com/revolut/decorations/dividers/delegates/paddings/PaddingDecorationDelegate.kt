@@ -36,7 +36,7 @@ data class PaddingDecorationDelegate constructor(
     val background: PaddingDecorationBackground
 ) : BaseDividerDecorationDelegate() {
 
-    private val paddingPx by lazy {
+    val paddingPx by lazy {
         resources.getDimensionPixelSize(padding)
     }
 

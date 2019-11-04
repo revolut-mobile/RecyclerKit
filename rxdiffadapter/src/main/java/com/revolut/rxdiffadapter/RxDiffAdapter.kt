@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit
 */
 open class RxDiffAdapter constructor(
     delegatesManager: DelegatesManager? = null,
-    private val async: Boolean = false,
+    val async: Boolean = false,
     private val autoScrollToTop: Boolean = false,
     private val detectMoves: Boolean = true
 ) : AbsRecyclerDelegatesAdapter(delegatesManager) {
@@ -62,7 +62,7 @@ open class RxDiffAdapter constructor(
     private class CopyOnWriteListWrapper<T> : CopyOnWriteArrayList<T>(), ListWrapper<T>
     private class ArrayListListWrapper<T> : ArrayList<T>(), ListWrapper<T>
 
-    private val items: ListWrapper<ListItem> = if (async) CopyOnWriteListWrapper() else ArrayListListWrapper()
+    val items: ListWrapper<ListItem> = if (async) CopyOnWriteListWrapper() else ArrayListListWrapper()
 
     private var recyclerView = WeakReference<RecyclerView>(null)
     private var queue: Queue<List<ListItem>>? = null
