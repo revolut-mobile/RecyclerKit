@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView
  */
 interface FrameDecorationDelegate {
 
+    fun onDraw(canvas: Canvas, view: View, parent: RecyclerView, state: RecyclerView.State)
+
     fun onDrawOver(canvas: Canvas, view: View, parent: RecyclerView, state: RecyclerView.State)
 
     fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State)

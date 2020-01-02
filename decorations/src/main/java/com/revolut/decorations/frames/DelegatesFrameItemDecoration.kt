@@ -27,6 +27,22 @@ class DelegatesFrameItemDecoration : RecyclerView.ItemDecoration() {
 
     private val rect = Rect()
 
+    override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        super.onDraw(canvas, parent, state)
+
+        val adapter = parent.adapter as? AbsRecyclerDelegatesAdapter ?: return
+        canvas.save()
+        rect.set(parent.paddingLeft, parent.paddingTop, parent.width - parent.paddingRight, parent.height - parent.paddingBottom)
+        canvas.clipRect(rect)
+
+        parent.forEachViewAdapterPosition { view, pos ->
+            (adapter.getItem(pos) as? FrameDecoratedItem)?.run {
+                frameDecoration?.onDraw(canvas, view, parent, state)
+            }
+        }
+        canvas.restore()
+    }
+
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDrawOver(canvas, parent, state)
         val adapter = parent.adapter as? AbsRecyclerDelegatesAdapter ?: return

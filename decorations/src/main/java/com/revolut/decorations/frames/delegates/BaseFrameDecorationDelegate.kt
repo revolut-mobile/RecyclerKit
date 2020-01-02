@@ -32,6 +32,11 @@ abstract class BaseFrameDecorationDelegate : FrameDecorationDelegate {
         get() = resourcesWeak.get() ?: throw IllegalStateException("Resources is null")
 
     @CallSuper
+    override fun onDraw(canvas: Canvas, view: View, parent: RecyclerView, state: RecyclerView.State) {
+        resourcesWeak = WeakReference(parent.resources)
+    }
+
+    @CallSuper
     override fun onDrawOver(canvas: Canvas, view: View, parent: RecyclerView, state: RecyclerView.State) {
         resourcesWeak = WeakReference(parent.resources)
     }

@@ -31,7 +31,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':delegates')
 
-    implementation "androidx.recyclerview:recyclerview:1.0.0"
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
@@ -40,7 +40,7 @@ dependencies {
 publish {
     def groupProjectID = 'com.revolut.recyclerkit'
     def artifactProjectID = 'decorations'
-    def publishVersionID = '1.0.2'
+    def publishVersionID = '1.0.3'
 
     userOrg = 'revolut-mobile'
     repoName = 'RecyclerKit'
