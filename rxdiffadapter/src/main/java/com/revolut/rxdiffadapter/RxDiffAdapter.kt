@@ -107,19 +107,28 @@ open class RxDiffAdapter constructor(
     fun onDetachedFromWindow() = queue?.disposable?.dispose()
 
     private fun dispatchDiffInternal(diffResult: DiffUtil.DiffResult, newList: List<ListItem>) {
-        val lm = recyclerView.get()?.layoutManager
-        val firstVisiblePosition = when (lm) {
+        val rv = recyclerView.get() ?: throw IllegalStateException("Recycler View not attached")
+
+        val firstVisiblePosition = when (val lm = rv.layoutManager) {
             is LinearLayoutManager -> lm.findFirstVisibleItemPosition()
             else -> 0
         }
 
-        this.items.clear()
-        this.items.addAll(newList)
+        val dispatchDiff: () -> Unit = {
+            this.items.clear()
+            this.items.addAll(newList)
 
-        diffResult.dispatchUpdatesTo(this)
+            diffResult.dispatchUpdatesTo(this)
+        }
+
+        if (rv.isComputingLayout) {
+            rv.post { dispatchDiff() }
+        } else {
+            dispatchDiff()
+        }
 
         if (autoScrollToTop && firstVisiblePosition == 0) {
-            recyclerView.get()?.scrollToPosition(0)
+            rv.scrollToPosition(0)
         }
     }
 
