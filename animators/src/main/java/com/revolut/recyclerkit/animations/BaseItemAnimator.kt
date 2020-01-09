@@ -494,7 +494,7 @@ abstract class BaseItemAnimator(
                     override fun onAnimationEnd(view: View) {
                         oldViewAnim.setListener(null)
                         view.alpha = 1f
-                        view.translationX = 0f
+                        view.translationY = 0f
                         view.translationX = 0f
                         dispatchChangeFinished(oldHolder, true)
                         changeAnimations.remove(oldHolder)

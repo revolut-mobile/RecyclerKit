@@ -2,6 +2,8 @@
 
 buildscript {
     ext.kotlin_version = '1.3.50'
+    ext.recycler_version = '1.1.0'
+
     repositories {
         google()
         jcenter()
