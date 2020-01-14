@@ -1,7 +1,7 @@
 package com.revolut.decorations
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.revolut.recyclerkit.delegates.BaseRecyclerViewHolder
 
 /*
  * Copyright (C) 2019 Revolut
@@ -20,9 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
  *
  */
 
-internal fun RecyclerView.forEachViewAdapterPosition(block: (view: View, pos: Int) -> Unit) = (0 until childCount).map { getChildAt(it) }.forEach { view ->
-    getChildAdapterPosition(view).takeUnless { pos -> pos == RecyclerView.NO_POSITION }?.let { pos ->
-        block(view, pos)
-    }
+internal fun RecyclerView.forEachBaseViewHolder(block: (viewHolder: BaseRecyclerViewHolder) -> Unit) = (0 until childCount).map { getChildAt(it) }.forEach { view ->
+    getChildViewHolder(view)?.let { it as? BaseRecyclerViewHolder }?.run(block)
 }
 

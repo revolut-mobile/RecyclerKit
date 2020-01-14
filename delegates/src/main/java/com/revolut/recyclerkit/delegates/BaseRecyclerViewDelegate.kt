@@ -1,5 +1,6 @@
 package com.revolut.recyclerkit.delegates
 
+import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
 
 /*
@@ -21,12 +22,17 @@ import androidx.recyclerview.widget.RecyclerView
  *
  */
 
-abstract class BaseRecyclerViewDelegate<T : ListItem, VH : RecyclerView.ViewHolder> constructor(
+abstract class BaseRecyclerViewDelegate<T : ListItem, VH : BaseRecyclerViewHolder> constructor(
     override val viewType: Int,
     private val rule: (pos: Int, data: Any) -> Boolean
 ) : RecyclerViewDelegate<T, VH> {
 
     override fun suitFor(position: Int, data: Any): Boolean = rule(position, data)
+
+    @CallSuper
+    override fun onBindViewHolder(holder: VH, data: T, pos: Int, payloads: List<Any>?) {
+        holder.lastBoundItem = data
+    }
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         //do nothing by default
