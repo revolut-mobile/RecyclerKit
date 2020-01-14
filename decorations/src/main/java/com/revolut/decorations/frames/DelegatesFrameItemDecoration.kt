@@ -4,8 +4,8 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.revolut.decorations.forEachViewAdapterPosition
-import com.revolut.recyclerkit.delegates.AbsRecyclerDelegatesAdapter
+import com.revolut.decorations.forEachBaseViewHolder
+import com.revolut.recyclerkit.delegates.BaseRecyclerViewHolder
 
 /*
  * Copyright (C) 2019 Revolut
@@ -30,14 +30,13 @@ class DelegatesFrameItemDecoration : RecyclerView.ItemDecoration() {
     override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDraw(canvas, parent, state)
 
-        val adapter = parent.adapter as? AbsRecyclerDelegatesAdapter ?: return
         canvas.save()
         rect.set(parent.paddingLeft, parent.paddingTop, parent.width - parent.paddingRight, parent.height - parent.paddingBottom)
         canvas.clipRect(rect)
 
-        parent.forEachViewAdapterPosition { view, pos ->
-            (adapter.getItem(pos) as? FrameDecoratedItem)?.run {
-                frameDecoration?.onDraw(canvas, view, parent, state)
+        parent.forEachBaseViewHolder { vh ->
+            (vh.lastBoundItem as? FrameDecoratedItem)?.run {
+                frameDecoration?.onDraw(canvas, vh.itemView, parent, state)
             }
         }
         canvas.restore()
@@ -45,35 +44,24 @@ class DelegatesFrameItemDecoration : RecyclerView.ItemDecoration() {
 
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDrawOver(canvas, parent, state)
-        val adapter = parent.adapter as? AbsRecyclerDelegatesAdapter ?: return
 
         canvas.save()
         rect.set(parent.paddingLeft, parent.paddingTop, parent.width - parent.paddingRight, parent.height - parent.paddingBottom)
         canvas.clipRect(rect)
 
-        parent.forEachViewAdapterPosition { view, pos ->
-            (adapter.getItem(pos) as? FrameDecoratedItem)?.run {
-                frameDecoration?.onDrawOver(canvas, view, parent, state)
+        parent.forEachBaseViewHolder { vh ->
+            (vh.lastBoundItem as? FrameDecoratedItem)?.run {
+                frameDecoration?.onDrawOver(canvas, vh.itemView, parent, state)
             }
         }
         canvas.restore()
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-        val adapter = parent.adapter
 
-        if (adapter != null && adapter is AbsRecyclerDelegatesAdapter) {
-
-            val pos = parent.getChildAdapterPosition(view)
-            if (pos == RecyclerView.NO_POSITION) {
-                return
-            }
-
-            val item = adapter.getItem(pos)
-
-            if (item is FrameDecoratedItem) {
-                item.frameDecoration?.getItemOffsets(outRect, view, parent, state)
-            }
+        val item = (parent.findContainingViewHolder(view) as? BaseRecyclerViewHolder)?.lastBoundItem ?: return
+        if (item is FrameDecoratedItem) {
+            item.frameDecoration?.getItemOffsets(outRect, view, parent, state)
         }
     }
 

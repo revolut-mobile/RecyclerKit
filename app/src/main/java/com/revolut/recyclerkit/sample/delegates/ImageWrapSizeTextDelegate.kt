@@ -5,13 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import com.revolut.decorations.dividers.DividerDecoratedItem
 import com.revolut.decorations.dividers.delegates.DividerDecorationDelegate
 import com.revolut.recyclerkit.delegates.BaseRecyclerViewDelegate
+import com.revolut.recyclerkit.delegates.BaseRecyclerViewHolder
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.sample.R
 import kotlinx.android.synthetic.main.image_wrap_size_text_delegate.view.*
@@ -27,6 +27,7 @@ class ImageWrapSizeTextDelegate(
         ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.image_wrap_size_text_delegate, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, data: Model, pos: Int, payloads: List<Any>?) {
+        super.onBindViewHolder(holder, data, pos, payloads)
         holder.takeIf { payloads.isNullOrEmpty() }?.applyData(data)
     }
 
@@ -54,7 +55,7 @@ class ImageWrapSizeTextDelegate(
         override var rightDecoration: DividerDecorationDelegate? = null
     ) : ListItem, DividerDecoratedItem
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View) : BaseRecyclerViewHolder(itemView) {
         val textView: TextView = itemView.textView
         val imageView: ImageView = itemView.imageView
     }

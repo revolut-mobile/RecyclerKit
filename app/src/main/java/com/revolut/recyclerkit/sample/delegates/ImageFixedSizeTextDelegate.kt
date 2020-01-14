@@ -19,6 +19,7 @@ import com.revolut.decorations.overlay.OverlayDecoratedItem
 import com.revolut.decorations.overlay.delegates.OverlayDecorationDelegate
 import com.revolut.recyclerkit.animations.holder.AnimateChangeViewHolder
 import com.revolut.recyclerkit.delegates.BaseRecyclerViewDelegate
+import com.revolut.recyclerkit.delegates.BaseRecyclerViewHolder
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.sample.R
 import com.revolut.recyclerkit.sample.delegates.ImageFixedSizeTextDelegate.Model
@@ -41,6 +42,7 @@ class ImageFixedSizeTextDelegate(
         ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.image_fixed_size_text_delegate, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, data: Model, pos: Int, payloads: List<Any>?) {
+        super.onBindViewHolder(holder, data, pos, payloads)
         payloads?.filterIsInstance<Payload>()
             ?.forEach { payload -> holder.applyPayload(payload) }
 
@@ -105,7 +107,7 @@ class ImageFixedSizeTextDelegate(
 
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), AnimateChangeViewHolder {
+    class ViewHolder(itemView: View) : BaseRecyclerViewHolder(itemView), AnimateChangeViewHolder {
 
         override fun canAnimateChange(payloads: List<Any>): Boolean {
             //Animates only when Model.text changes
