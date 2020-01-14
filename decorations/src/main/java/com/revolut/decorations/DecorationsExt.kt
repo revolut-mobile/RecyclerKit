@@ -20,6 +20,6 @@ import com.revolut.recyclerkit.delegates.BaseRecyclerViewHolder
  *
  */
 
-internal fun RecyclerView.forEachBaseViewHolder(block: (viewHolder: BaseRecyclerViewHolder) -> Unit) = (0 until childCount).map { getChildAt(it) }.forEach { view ->
+internal fun RecyclerView.forEachBaseViewHolder(block: (viewHolder: BaseRecyclerViewHolder) -> Unit) = (0 until childCount).asSequence().map { getChildAt(it) }.forEach { view ->
     (getChildViewHolder(view) as? BaseRecyclerViewHolder)?.run(block)
 }
