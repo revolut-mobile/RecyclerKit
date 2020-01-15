@@ -87,4 +87,34 @@ class RoundCornerFrameDecorationDelegate(
         }
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as RoundCornerFrameDecorationDelegate
+
+        if (topPadding != other.topPadding) return false
+        if (rightPadding != other.rightPadding) return false
+        if (bottomPadding != other.bottomPadding) return false
+        if (leftPadding != other.leftPadding) return false
+        if (roundRadiusRes != other.roundRadiusRes) return false
+        if (shouldOverridePadding != other.shouldOverridePadding) return false
+        if (minHeight != other.minHeight) return false
+        if (backgroundRes != other.backgroundRes) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = topPadding
+        result = 31 * result + rightPadding
+        result = 31 * result + bottomPadding
+        result = 31 * result + leftPadding
+        result = 31 * result + roundRadiusRes
+        result = 31 * result + shouldOverridePadding.hashCode()
+        result = 31 * result + minHeight
+        result = 31 * result + backgroundRes
+        return result
+    }
+
 }

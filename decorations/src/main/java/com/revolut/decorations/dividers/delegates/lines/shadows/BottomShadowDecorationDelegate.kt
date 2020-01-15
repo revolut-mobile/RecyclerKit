@@ -23,11 +23,11 @@ import com.revolut.decorations.R
  */
 
 class BottomShadowDecorationDelegate constructor(
-    @DrawableRes override val shadow: Int,
-    @ColorRes private val backgroundColor: Int = android.R.color.transparent,
-    @DimenRes override val dividerHeight: Int = R.dimen.dp_8,
-    @DimenRes override val preDividerPadding: Int = R.dimen.dp_16,
-    @DimenRes override val postDividerPadding: Int = R.dimen.zero_padding_decoration
+    @DrawableRes shadow: Int,
+    @ColorRes backgroundColor: Int = android.R.color.transparent,
+    @DimenRes dividerHeight: Int = R.dimen.dp_8,
+    @DimenRes preDividerPadding: Int = R.dimen.dp_16,
+    @DimenRes postDividerPadding: Int = R.dimen.zero_padding_decoration
 ) : BaseShadowDecorationDelegate(
     shadow = shadow,
     dividerHeight = dividerHeight,
