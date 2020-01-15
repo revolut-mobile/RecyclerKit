@@ -33,6 +33,7 @@ import com.revolut.decorations.dividers.delegates.lines.LineDividerDecorationDel
 open class BaseShadowDecorationDelegate protected constructor(
     @DrawableRes protected open val shadow: Int,
     @ColorRes private val backgroundColor: Int = android.R.color.transparent,
+
     @DimenRes override val dividerHeight: Int = R.dimen.dp_8,
     @DimenRes override val preDividerPadding: Int = R.dimen.dp_16,
     @DimenRes override val postDividerPadding: Int = R.dimen.dp_16
@@ -108,6 +109,24 @@ open class BaseShadowDecorationDelegate protected constructor(
             canvas.drawRect(shadowRect, backgroundPaint)
             draw(canvas)
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is BaseShadowDecorationDelegate) return false
+        if (!super.equals(other)) return false
+
+        if (shadow != other.shadow) return false
+        if (backgroundColor != other.backgroundColor) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + shadow
+        result = 31 * result + backgroundColor
+        return result
     }
 
 }

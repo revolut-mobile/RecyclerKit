@@ -192,4 +192,32 @@ open class LineDividerDecorationDelegate constructor(
         outRect.bottom += overallHeightPx
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is LineDividerDecorationDelegate) return false
+
+        if (dividerColor != other.dividerColor) return false
+        if (paddingColor != other.paddingColor) return false
+        if (dividerHeight != other.dividerHeight) return false
+        if (preDividerPadding != other.preDividerPadding) return false
+        if (postDividerPadding != other.postDividerPadding) return false
+        if (dividerPaddingLeft != other.dividerPaddingLeft) return false
+        if (dividerPaddingRight != other.dividerPaddingRight) return false
+        if (animate != other.animate) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = dividerColor
+        result = 31 * result + paddingColor
+        result = 31 * result + dividerHeight
+        result = 31 * result + preDividerPadding
+        result = 31 * result + postDividerPadding
+        result = 31 * result + dividerPaddingLeft
+        result = 31 * result + dividerPaddingRight
+        result = 31 * result + animate.hashCode()
+        return result
+    }
+
 }

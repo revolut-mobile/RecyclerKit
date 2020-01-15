@@ -50,4 +50,19 @@ data class ColorOverlayDecorationDelegate(
         canvas.drawRect(rect, paint)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ColorOverlayDecorationDelegate
+
+        if (colorRes != other.colorRes) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return colorRes
+    }
+
 }

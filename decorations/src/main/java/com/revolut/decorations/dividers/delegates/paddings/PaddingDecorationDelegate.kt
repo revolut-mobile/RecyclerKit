@@ -149,6 +149,24 @@ data class PaddingDecorationDelegate constructor(
         canvas.drawRect(rect, this)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as PaddingDecorationDelegate
+
+        if (padding != other.padding) return false
+        if (background != other.background) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = padding
+        result = 31 * result + background.hashCode()
+        return result
+    }
+
 }
 
 sealed class PaddingDecorationBackground {
