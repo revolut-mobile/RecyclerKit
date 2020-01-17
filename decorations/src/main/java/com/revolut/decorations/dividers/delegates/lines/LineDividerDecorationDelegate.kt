@@ -106,10 +106,9 @@ open class LineDividerDecorationDelegate constructor(
         }
 
         canvas.drawRect(
-
             lm.getDecoratedLeft(view).toFloat() + dividerPaddingLeftPx,
             (view.translatedTop() - postDividerPaddingPx - dividerHeightPx),
-            view.right.toFloat() - dividerPaddingRightPx,
+            lm.getDecoratedRight(view).toFloat() - dividerPaddingRightPx,
             (view.translatedTop() - postDividerPaddingPx),
             dividerPaint
         )
@@ -154,9 +153,9 @@ open class LineDividerDecorationDelegate constructor(
         }
 
         canvas.drawRect(
-            view.left.toFloat(),
+            lm.getDecoratedLeft(view).toFloat() + dividerPaddingLeftPx,
             (view.translatedBottom() + preDividerPaddingPx),
-            view.right.toFloat(),
+            lm.getDecoratedRight(view).toFloat() - dividerPaddingRightPx,
             (view.translatedBottom() + preDividerPaddingPx + dividerHeightPx),
             dividerPaint
         )
