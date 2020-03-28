@@ -1,10 +1,10 @@
 package com.revolut.recyclerkit.animations
 
-import android.view.View
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
 import androidx.core.view.ViewCompat
-import androidx.core.view.ViewPropertyAnimatorListener
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.revolut.recyclerkit.animations.holder.AnimateAddViewHolder
@@ -12,6 +12,7 @@ import com.revolut.recyclerkit.animations.holder.AnimateChangeViewHolder
 import com.revolut.recyclerkit.animations.holder.AnimateRemoveViewHolder
 import com.revolut.recyclerkit.animations.internal.clear
 import java.util.*
+import kotlin.math.abs
 
 /*
  * Copyright (C) 2019 Revolut
@@ -69,10 +70,10 @@ abstract class BaseItemAnimator(
     }
 
     override fun runPendingAnimations() {
-        val removalsPending = !pendingRemovals.isEmpty()
-        val movesPending = !pendingMoves.isEmpty()
-        val changesPending = !pendingChanges.isEmpty()
-        val additionsPending = !pendingAdditions.isEmpty()
+        val removalsPending = pendingRemovals.isNotEmpty()
+        val movesPending = pendingMoves.isNotEmpty()
+        val changesPending = pendingChanges.isNotEmpty()
+        val additionsPending = pendingAdditions.isNotEmpty()
         if (!removalsPending && !movesPending && !additionsPending && !changesPending) {
             // nothing to animate
             return
@@ -191,7 +192,7 @@ abstract class BaseItemAnimator(
     override fun endAnimation(item: ViewHolder) {
         val view = item.itemView
         // this will trigger end callback which should set properties to their target values.
-        ViewCompat.animate(view).cancel()
+        view.animate().cancel()
 
         if (item is AnimateAddViewHolder) {
             (item as AnimateAddViewHolder).endAddAnimation(item)
@@ -337,17 +338,17 @@ abstract class BaseItemAnimator(
     }
 
     override fun isRunning(): Boolean {
-        return !pendingAdditions.isEmpty() ||
-                !pendingChanges.isEmpty() ||
-                !pendingMoves.isEmpty() ||
-                !pendingRemovals.isEmpty() ||
-                !moveAnimations.isEmpty() ||
-                !removeAnimations.isEmpty() ||
-                !addAnimations.isEmpty() ||
-                !changeAnimations.isEmpty() ||
-                !movesList.isEmpty() ||
-                !additionsList.isEmpty() ||
-                !changesList.isEmpty()
+        return pendingAdditions.isNotEmpty() ||
+                pendingChanges.isNotEmpty() ||
+                pendingMoves.isNotEmpty() ||
+                pendingRemovals.isNotEmpty() ||
+                moveAnimations.isNotEmpty() ||
+                removeAnimations.isNotEmpty() ||
+                addAnimations.isNotEmpty() ||
+                changeAnimations.isNotEmpty() ||
+                movesList.isNotEmpty() ||
+                additionsList.isNotEmpty() ||
+                changesList.isNotEmpty()
     }
 
     protected fun getRemoveDelay(holder: ViewHolder): Long {
@@ -373,7 +374,7 @@ abstract class BaseItemAnimator(
     protected open fun preAnimateAddImpl(holder: ViewHolder) = Unit
 
     protected fun getAddDelay(holder: ViewHolder): Long {
-        return Math.abs(holder.adapterPosition * addDuration / 4)
+        return abs(holder.adapterPosition * addDuration / 4)
     }
 
     override fun animateMove(holder: ViewHolder, fromX: Int, fromY: Int, toX: Int, toY: Int): Boolean {
@@ -403,22 +404,22 @@ abstract class BaseItemAnimator(
         val deltaX = toX - fromX
         val deltaY = toY - fromY
         if (deltaX != 0) {
-            ViewCompat.animate(view).translationX(0f)
+            view.animate().translationX(0f)
         }
         if (deltaY != 0) {
-            ViewCompat.animate(view).translationY(0f)
+            view.animate().translationY(0f)
         }
         // TODO: make EndActions end listeners instead, since end actions aren't called when
         // vpas are canceled (and can't end them. why?)
         // need listener functionality in VPACompat for this. Ick.
         moveAnimations.add(holder)
-        val animation = ViewCompat.animate(view)
-        animation.setDuration(moveDuration).setListener(object : VpaListenerAdapter() {
-            override fun onAnimationStart(view: View) {
+        val animation = view.animate()
+        animation.setDuration(moveDuration).setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animator: Animator) {
                 dispatchMoveStarting(holder)
             }
 
-            override fun onAnimationCancel(view: View) {
+            override fun onAnimationCancel(animator: Animator) {
                 if (deltaX != 0) {
                     view.translationX = 0f
                 }
@@ -427,7 +428,7 @@ abstract class BaseItemAnimator(
                 }
             }
 
-            override fun onAnimationEnd(view: View) {
+            override fun onAnimationEnd(animator: Animator) {
                 animation.setListener(null)
                 dispatchMoveFinished(holder)
                 moveAnimations.remove(holder)
@@ -482,16 +483,16 @@ abstract class BaseItemAnimator(
 
         if (view != null) {
             changeAnimations.add(oldHolder)
-            val oldViewAnim = ViewCompat.animate(view).setDuration(changeDuration)
+            val oldViewAnim = view.animate().setDuration(changeDuration)
 
             oldViewAnim.translationX((changeInfo.toX - changeInfo.fromX).toFloat()).translationY((changeInfo.toY - changeInfo.fromY).toFloat())
                 .alpha((if (withCrossFade) 0 else 1).toFloat())
-                .setListener(object : VpaListenerAdapter() {
-                    override fun onAnimationStart(view: View) {
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animator: Animator) {
                         dispatchChangeStarting(changeInfo.oldHolder, true)
                     }
 
-                    override fun onAnimationEnd(view: View) {
+                    override fun onAnimationEnd(animator: Animator) {
                         oldViewAnim.setListener(null)
                         view.alpha = 1f
                         view.translationY = 0f
@@ -504,17 +505,17 @@ abstract class BaseItemAnimator(
         }
         if (newView != null) {
             changeAnimations.add(newHolder)
-            val newViewAnimation = ViewCompat.animate(newView)
+            val newViewAnimation = newView.animate()
 
             newViewAnimation.translationX(0f).translationY(0f)
                 .setDuration(changeDuration)
                 .alpha(1f)
-                .setListener(object : VpaListenerAdapter() {
-                    override fun onAnimationStart(view: View) {
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animator: Animator) {
                         dispatchChangeStarting(newHolder, false)
                     }
 
-                    override fun onAnimationEnd(view: View) {
+                    override fun onAnimationEnd(animator: Animator) {
                         newViewAnimation.setListener(null)
                         newView.alpha = 1f
                         newView.translationX = 0f
@@ -630,7 +631,7 @@ abstract class BaseItemAnimator(
 
     private fun cancelAll(viewHolders: List<ViewHolder>) {
         for (i in viewHolders.indices.reversed()) {
-            ViewCompat.animate(viewHolders[i].itemView).cancel()
+            viewHolders[i].itemView.animate().cancel()
         }
     }
 
@@ -668,18 +669,9 @@ abstract class BaseItemAnimator(
         }
     }
 
-    open class VpaListenerAdapter : ViewPropertyAnimatorListener {
+    protected inner class DefaultAddVpaListener(private var mViewHolder: ViewHolder) : AnimatorListenerAdapter() {
 
-        override fun onAnimationStart(view: View) {}
-
-        override fun onAnimationEnd(view: View) {}
-
-        override fun onAnimationCancel(view: View) {}
-    }
-
-    protected inner class DefaultAddVpaListener(internal var mViewHolder: ViewHolder) : VpaListenerAdapter() {
-
-        override fun onAnimationStart(view: View) {
+        override fun onAnimationStart(animator: Animator) {
             //Might have been dispatched already
             if (!addAnimations.contains(mViewHolder)) {
                 dispatchAddStarting(mViewHolder)
@@ -687,24 +679,24 @@ abstract class BaseItemAnimator(
             addAnimations.add(mViewHolder)
         }
 
-        override fun onAnimationCancel(view: View) {
-            view.clear()
+        override fun onAnimationCancel(animator: Animator) {
+            mViewHolder.itemView.clear()
         }
 
-        override fun onAnimationEnd(view: View) {
+        override fun onAnimationEnd(animator: Animator) {
             addAnimations.remove(mViewHolder)
             //Might still have another animation
             if (!addAnimations.contains(mViewHolder)) {
                 dispatchAddFinished(mViewHolder)
             }
-            view.clear()
+            mViewHolder.itemView.clear()
             dispatchFinishedWhenDone()
         }
     }
 
-    protected inner class DefaultRemoveVpaListener(private var mViewHolder: ViewHolder) : VpaListenerAdapter() {
+    protected inner class DefaultRemoveVpaListener(private var mViewHolder: ViewHolder) : AnimatorListenerAdapter() {
 
-        override fun onAnimationStart(view: View) {
+        override fun onAnimationStart(view: Animator) {
             //Might have been dispatched already
             if (!removeAnimations.contains(mViewHolder)) {
                 dispatchRemoveStarting(mViewHolder)
@@ -712,12 +704,12 @@ abstract class BaseItemAnimator(
             removeAnimations.add(mViewHolder)
         }
 
-        override fun onAnimationCancel(view: View) {
-            view.clear()
+        override fun onAnimationCancel(view: Animator) {
+            mViewHolder.itemView.clear()
         }
 
-        override fun onAnimationEnd(view: View) {
-            view.clear()
+        override fun onAnimationEnd(view: Animator) {
+            mViewHolder.itemView.clear()
             removeAnimations.remove(mViewHolder)
 
             if (!removeAnimations.contains(mViewHolder)) {

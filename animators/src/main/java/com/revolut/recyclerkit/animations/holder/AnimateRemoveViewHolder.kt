@@ -1,7 +1,6 @@
 package com.revolut.recyclerkit.animations.holder
 
-
-import androidx.core.view.ViewPropertyAnimatorListener
+import android.animation.Animator
 import androidx.recyclerview.widget.RecyclerView
 
 /*
@@ -25,7 +24,7 @@ interface AnimateRemoveViewHolder {
 
     fun preAnimateRemoveImpl(holder: RecyclerView.ViewHolder)
 
-    fun animateRemoveImpl(holder: RecyclerView.ViewHolder, listener: ViewPropertyAnimatorListener)
+    fun animateRemoveImpl(holder: RecyclerView.ViewHolder, listener: Animator.AnimatorListener)
 
     fun endRemoveAnimation(holder: RecyclerView.ViewHolder)
 

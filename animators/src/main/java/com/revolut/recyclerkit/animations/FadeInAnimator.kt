@@ -2,7 +2,6 @@ package com.revolut.recyclerkit.animations
 
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 
 /*
@@ -36,7 +35,7 @@ class FadeInAnimator(
 ) {
 
     override fun animateRemoveImpl(holder: RecyclerView.ViewHolder) {
-        ViewCompat.animate(holder.itemView)
+        holder.itemView.animate()
             .alpha(0f)
             .setDuration(removeDuration)
             .setInterpolator(interpolator)
@@ -50,7 +49,7 @@ class FadeInAnimator(
     }
 
     override fun animateAddImpl(holder: RecyclerView.ViewHolder) {
-        ViewCompat.animate(holder.itemView)
+        holder.itemView.animate()
             .alpha(1f)
             .setDuration(addDuration)
             .setInterpolator(interpolator)

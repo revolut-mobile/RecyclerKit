@@ -1,7 +1,6 @@
 package com.revolut.recyclerkit.animations.internal
 
 import android.view.View
-import androidx.core.view.ViewCompat
 
 /*
  * Copyright (C) 2019 Revolut
@@ -34,5 +33,5 @@ fun View.clear() {
     rotationX = 0f
     pivotY = (measuredHeight / 2).toFloat()
     pivotX = (measuredWidth / 2).toFloat()
-    ViewCompat.animate(this).setInterpolator(null).startDelay = 0
+    this.animate().setInterpolator(null).startDelay = 0
 }
