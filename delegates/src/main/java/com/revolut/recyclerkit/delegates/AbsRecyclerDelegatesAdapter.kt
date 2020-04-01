@@ -41,8 +41,22 @@ abstract class AbsRecyclerDelegatesAdapter(
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         holder.apply {
-            delegatesManager.getDelegateFor(this.itemViewType)?.onViewRecycled(this)
+            delegatesManager.getDelegateFor(this.itemViewType).onViewRecycled(this)
         }
+    }
+
+    @Suppress("unchecked_cast")
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        (delegatesManager.getDelegateFor(holder.itemViewType) as RecyclerViewDelegate<ListItem, RecyclerView.ViewHolder>)
+            .onViewAttachedToWindow(holder)
+    }
+
+    @Suppress("unchecked_cast")
+    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        (delegatesManager.getDelegateFor(holder.itemViewType) as RecyclerViewDelegate<ListItem, RecyclerView.ViewHolder>)
+            .onViewDetachedFromWindow(holder)
     }
 
     override fun getItemViewType(position: Int): Int = delegatesManager.getViewTypeFor(position, getItem(position) as Any)

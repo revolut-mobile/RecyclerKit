@@ -37,7 +37,7 @@ repositories {
 publish {
     def groupProjectID = 'com.revolut.recyclerkit'
     def artifactProjectID = 'delegates'
-    def publishVersionID = '1.0.6'
+    def publishVersionID = '1.0.7'
 
     userOrg = 'revolut-mobile'
     repoName = 'RecyclerKit'

@@ -42,5 +42,9 @@ abstract class BaseRecyclerViewDelegate<T : ListItem, VH : BaseRecyclerViewHolde
         //do nothing by default
     }
 
+    override fun onViewDetachedFromWindow(holder: VH) {
+        //do nothing by default
+    }
+
 }
 

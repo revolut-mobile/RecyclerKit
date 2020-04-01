@@ -34,6 +34,8 @@ interface RecyclerViewDelegate<T : ListItem, VH> where VH : RecyclerView.ViewHol
 
     fun onViewAttachedToWindow(holder: VH)
 
+    fun onViewDetachedFromWindow(holder: VH)
+
     fun onViewRecycled(holder: RecyclerView.ViewHolder)
 
 }
