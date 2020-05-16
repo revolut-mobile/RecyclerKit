@@ -33,5 +33,5 @@ fun View.clear() {
     rotationX = 0f
     pivotY = (measuredHeight / 2).toFloat()
     pivotX = (measuredWidth / 2).toFloat()
-    this.animate().setListener(null).setInterpolator(null).startDelay = 0
+    this.animate().setInterpolator(null).startDelay = 0
 }
