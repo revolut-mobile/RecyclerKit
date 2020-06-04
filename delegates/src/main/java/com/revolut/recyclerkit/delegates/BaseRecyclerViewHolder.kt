@@ -2,6 +2,7 @@ package com.revolut.recyclerkit.delegates
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.extensions.LayoutContainer
 
 /*
  * Copyright (C) 2019 Revolut
@@ -21,7 +22,9 @@ import androidx.recyclerview.widget.RecyclerView
  *
  *
  */
-abstract class BaseRecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+abstract class BaseRecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), LayoutContainer {
+
+    override val containerView = itemView
 
     var lastBoundItem: ListItem? = null
         internal set
