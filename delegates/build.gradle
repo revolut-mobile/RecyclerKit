@@ -40,6 +40,10 @@ publish {
     def artifactProjectID = 'delegates'
     def publishVersionID = '1.0.8'
 
+    bintrayUser = System.getenv("BINTRAY_USER")
+    bintrayKey = System.getenv("BINTRAY_KEY")
+
+    userOrg = 'revolut-mobile'
     userOrg = 'revolut-mobile'
     repoName = 'RecyclerKit'
     groupId = groupProjectID
