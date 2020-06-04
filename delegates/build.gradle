@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 29
@@ -37,7 +38,7 @@ repositories {
 publish {
     def groupProjectID = 'com.revolut.recyclerkit'
     def artifactProjectID = 'delegates'
-    def publishVersionID = '1.0.7'
+    def publishVersionID = '1.0.8'
 
     userOrg = 'revolut-mobile'
     repoName = 'RecyclerKit'
