@@ -1,1 +1,1 @@
-include ':app', ':animators', ':delegates', ':rxdiffadapter', ':decorations'
+include ':app', ':animators', ':delegates', ':rxdiffadapter', ':decorations', ':kextensions'

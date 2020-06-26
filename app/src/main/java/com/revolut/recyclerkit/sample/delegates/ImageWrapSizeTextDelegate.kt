@@ -4,17 +4,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import com.revolut.decorations.dividers.DividerDecoratedItem
 import com.revolut.decorations.dividers.delegates.DividerDecorationDelegate
+import com.revolut.kextensions.ContainerRecyclerViewHolder
 import com.revolut.recyclerkit.delegates.BaseRecyclerViewDelegate
-import com.revolut.recyclerkit.delegates.BaseRecyclerViewHolder
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.sample.R
-import kotlinx.android.synthetic.main.image_wrap_size_text_delegate.view.*
+import kotlinx.android.synthetic.main.image_wrap_size_text_delegate.*
 
 class ImageWrapSizeTextDelegate(
     val onClickListener: (Model) -> Unit
@@ -42,7 +41,7 @@ class ImageWrapSizeTextDelegate(
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .signature(ObjectKey(System.currentTimeMillis()))
-            .into(imageView)
+            .into(this)
     }
 
     data class Model(
@@ -55,9 +54,6 @@ class ImageWrapSizeTextDelegate(
         override var rightDecoration: DividerDecorationDelegate? = null
     ) : ListItem, DividerDecoratedItem
 
-    class ViewHolder(itemView: View) : BaseRecyclerViewHolder(itemView) {
-        val textView: TextView = itemView.textView
-        val imageView: ImageView = itemView.imageView
-    }
+    class ViewHolder(itemView: View) : ContainerRecyclerViewHolder(itemView)
 
 }

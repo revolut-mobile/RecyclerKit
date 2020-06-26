@@ -1,10 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 29
+    buildToolsVersion "29.0.2"
 
     defaultConfig {
         minSdkVersion 19
@@ -12,44 +13,39 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+}
 
+androidExtensions {
+    experimental = true
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api "androidx.recyclerview:recyclerview:$recycler_version"
-
-    testImplementation 'junit:junit:4.12'
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-}
-repositories {
-    mavenCentral()
+    implementation project(':delegates')
 }
 
 publish {
     def groupProjectID = 'com.revolut.recyclerkit'
-    def artifactProjectID = 'delegates'
-    def publishVersionID = '1.0.8'
+    def artifactProjectID = 'kextensions'
+    def publishVersionID = '1.0.6'
 
     bintrayUser = System.getenv("BINTRAY_USER")
     bintrayKey = System.getenv("BINTRAY_KEY")
 
     userOrg = 'revolut-mobile'
-    userOrg = 'revolut-mobile'
     repoName = 'RecyclerKit'
     groupId = groupProjectID
     artifactId = artifactProjectID
     publishVersion = publishVersionID
-    desc = "RecyclerKit Delegates"
+    desc = "RecyclerKit Kotlin Android Extensions"
     website = "https://github.com/revolut-mobile/RecyclerKit"
 
 }

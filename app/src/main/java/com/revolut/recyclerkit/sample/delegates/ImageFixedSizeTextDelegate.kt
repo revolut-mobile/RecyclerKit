@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.view.animation.AnimationSet
 import android.view.animation.ScaleAnimation
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -17,14 +16,14 @@ import com.revolut.decorations.frames.FrameDecoratedItem
 import com.revolut.decorations.frames.delegates.FrameDecorationDelegate
 import com.revolut.decorations.overlay.OverlayDecoratedItem
 import com.revolut.decorations.overlay.delegates.OverlayDecorationDelegate
+import com.revolut.kextensions.ContainerRecyclerViewHolder
 import com.revolut.recyclerkit.animations.holder.AnimateChangeViewHolder
 import com.revolut.recyclerkit.delegates.BaseRecyclerViewDelegate
-import com.revolut.recyclerkit.delegates.BaseRecyclerViewHolder
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.sample.R
 import com.revolut.recyclerkit.sample.delegates.ImageFixedSizeTextDelegate.Model
 import com.revolut.recyclerkit.sample.delegates.ImageFixedSizeTextDelegate.ViewHolder
-import kotlinx.android.synthetic.main.image_fixed_size_text_delegate.view.*
+import kotlinx.android.synthetic.main.image_fixed_size_text_delegate.*
 
 /**
  * This Delegate animates text change itself not relying on default RecyclerView cross-fade.
@@ -76,7 +75,7 @@ class ImageFixedSizeTextDelegate(
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .signature(ObjectKey(System.currentTimeMillis()))
-            .into(imageView)
+            .into(this)
     }
 
     data class Payload(
@@ -107,7 +106,7 @@ class ImageFixedSizeTextDelegate(
 
     }
 
-    class ViewHolder(itemView: View) : BaseRecyclerViewHolder(itemView), AnimateChangeViewHolder {
+    class ViewHolder(itemView: View) : ContainerRecyclerViewHolder(itemView), AnimateChangeViewHolder {
 
         override fun canAnimateChange(payloads: List<Any>): Boolean {
             //Animates only when Model.text changes
@@ -115,11 +114,8 @@ class ImageFixedSizeTextDelegate(
         }
 
         override fun endChangeAnimation(holder: RecyclerView.ViewHolder) {
-            (holder as ViewHolder).textView.clearAnimation()
+            textView.clearAnimation()
         }
-
-        val textView: TextView = itemView.textView
-        val imageView: ImageView = itemView.imageView
     }
 
 }
