@@ -1,7 +1,10 @@
-package com.revolut.recyclerkit.delegates
+package com.revolut.kextensions
 
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
+import com.revolut.recyclerkit.delegates.BaseRecyclerViewHolder
+import kotlinx.android.extensions.CacheImplementation
+import kotlinx.android.extensions.ContainerOptions
+import kotlinx.android.extensions.LayoutContainer
 
 /*
  * Copyright (C) 2019 Revolut
@@ -21,9 +24,11 @@ import androidx.recyclerview.widget.RecyclerView
  *
  *
  */
-abstract class BaseRecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    var lastBoundItem: ListItem? = null
-        internal set
+// Optimization for Android
+@ContainerOptions(cache = CacheImplementation.SPARSE_ARRAY)
+abstract class ContainerRecyclerViewHolder(itemView: View) : BaseRecyclerViewHolder(itemView), LayoutContainer {
+
+    override val containerView: View = itemView
 
 }
