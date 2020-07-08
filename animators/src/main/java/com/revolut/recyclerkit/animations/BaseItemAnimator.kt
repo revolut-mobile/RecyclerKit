@@ -712,7 +712,7 @@ abstract class BaseItemAnimator(
         return if (viewHolder is AnimateChangeViewHolder) {
             (viewHolder as AnimateChangeViewHolder).canAnimateChange(payloads)
         } else {
-            super.canReuseUpdatedViewHolder(viewHolder, payloads)
+            payloads.isNotEmpty() || super.canReuseUpdatedViewHolder(viewHolder, payloads)
         }
     }
 

@@ -46,7 +46,7 @@ repositories {
 publish {
     def groupProjectID = 'com.revolut.recyclerkit'
     def artifactProjectID = 'animators'
-    def publishVersionID = '1.0.9'
+    def publishVersionID = '1.0.10'
 
     bintrayUser = System.getenv("BINTRAY_USER")
     bintrayKey = System.getenv("BINTRAY_KEY")
