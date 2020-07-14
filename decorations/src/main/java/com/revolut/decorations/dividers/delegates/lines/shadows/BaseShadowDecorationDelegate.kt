@@ -33,12 +33,13 @@ import com.revolut.decorations.dividers.delegates.lines.LineDividerDecorationDel
 open class BaseShadowDecorationDelegate protected constructor(
     @DrawableRes protected open val shadow: Int,
     @ColorRes private val backgroundColor: Int = android.R.color.transparent,
-
+    @ColorRes private val paddingColor: Int,
     @DimenRes override val dividerHeight: Int = R.dimen.dp_8,
     @DimenRes override val preDividerPadding: Int = R.dimen.dp_16,
     @DimenRes override val postDividerPadding: Int = R.dimen.dp_16
 ) : LineDividerDecorationDelegate(
     dividerColor = android.R.color.transparent,
+    paddingColor = paddingColor,
     dividerHeight = dividerHeight,
     preDividerPadding = preDividerPadding,
     postDividerPadding = postDividerPadding
