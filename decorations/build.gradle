@@ -43,7 +43,7 @@ dependencies {
 publish {
     def groupProjectID = 'com.revolut.recyclerkit'
     def artifactProjectID = 'decorations'
-    def publishVersionID = '1.0.6'
+    def publishVersionID = '1.0.7'
 
     bintrayUser = System.getenv("BINTRAY_USER")
     bintrayKey = System.getenv("BINTRAY_KEY")
