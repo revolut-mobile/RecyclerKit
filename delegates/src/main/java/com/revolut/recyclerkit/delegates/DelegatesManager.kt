@@ -1,7 +1,7 @@
 package com.revolut.recyclerkit.delegates
 
+import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
 
 /*
  * Copyright (C) 2019 Revolut
@@ -26,27 +26,30 @@ class DelegatesManager(
     delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>? = null
 ) {
 
-    private val delegates = LinkedHashMap<Int, RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>()
+    private val delegates = SparseArrayCompat<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>()
 
     init {
-        delegates?.let { addDelegates(it) }
+        delegates?.let {
+            addDelegates(it)
+        }
     }
 
     fun getDelegateFor(viewType: Int): RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder> {
-        return delegates[viewType] ?: throw IllegalStateException("No delegate found for viewType $viewType")
+        return delegates[viewType] ?: error("No delegate found for viewType $viewType")
     }
 
     fun getViewTypeFor(position: Int, data: Any): Int {
-        for (delegate in delegates.values) {
-            if (delegate.suitFor(position, data)) {
+        for (index in 0 until delegates.size()) {
+            val delegate = delegates.valueAt(index)
+            if (delegate.suitFor(position = position, data = data)) {
                 return delegate.viewType
             }
         }
-        throw IllegalStateException("No delegate found for position $position and object $data")
+        error("No delegate found for position $position and object $data ")
     }
 
     fun addDelegate(delegate: RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>): DelegatesManager {
-        delegates[delegate.viewType] = delegate
+        delegates.put(delegate.viewType, delegate)
         return this
     }
 
@@ -56,7 +59,12 @@ class DelegatesManager(
     }
 
     fun getDelegates(): Collection<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>> {
-        return delegates.values
+        val delegateValues = mutableListOf<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>()
+        for (index in 0 until delegates.size()) {
+            val delegate = delegates.valueAt(index)
+            delegateValues.add(delegate)
+        }
+        return delegateValues
     }
 
 }
