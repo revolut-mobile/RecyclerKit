@@ -23,24 +23,23 @@ import androidx.recyclerview.widget.RecyclerView
  */
 
 class DelegatesManager(
-    delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>? = null
+    delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>> = emptyList()
 ) {
 
-    private val delegates = SparseArrayCompat<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>()
+    private val delegatesCache: SparseArrayCompat<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>> =
+        SparseArrayCompat<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>(delegates.size)
 
     init {
-        delegates?.let {
-            addDelegates(it)
-        }
+        addDelegates(delegates)
     }
 
     fun getDelegateFor(viewType: Int): RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder> {
-        return delegates[viewType] ?: error("No delegate found for viewType $viewType")
+        return delegatesCache[viewType] ?: error("No delegate found for viewType $viewType")
     }
 
     fun getViewTypeFor(position: Int, data: Any): Int {
-        for (index in 0 until delegates.size()) {
-            val delegate = delegates.valueAt(index)
+        for (index in 0 until delegatesCache.size()) {
+            val delegate = delegatesCache.valueAt(index)
             if (delegate.suitFor(position = position, data = data)) {
                 return delegate.viewType
             }
@@ -49,7 +48,7 @@ class DelegatesManager(
     }
 
     fun addDelegate(delegate: RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>): DelegatesManager {
-        delegates.put(delegate.viewType, delegate)
+        delegatesCache.put(delegate.viewType, delegate)
         return this
     }
 
@@ -60,8 +59,8 @@ class DelegatesManager(
 
     fun getDelegates(): Collection<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>> {
         val delegateValues = mutableListOf<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>()
-        for (index in 0 until delegates.size()) {
-            val delegate = delegates.valueAt(index)
+        for (index in 0 until delegatesCache.size()) {
+            val delegate = delegatesCache.valueAt(index)
             delegateValues.add(delegate)
         }
         return delegateValues
