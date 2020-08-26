@@ -58,7 +58,7 @@ class DelegatesManager(
     }
 
     fun getDelegates(): Collection<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>> {
-        val delegateValues = mutableListOf<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>()
+        val delegateValues = mutableListOf<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>(delegatesCache.size())
         for (index in 0 until delegatesCache.size()) {
             val delegate = delegatesCache.valueAt(index)
             delegateValues.add(delegate)
