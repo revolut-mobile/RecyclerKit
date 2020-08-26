@@ -7,7 +7,6 @@ import com.revolut.decorations.dividers.DelegatesDividerItemDecoration
 import com.revolut.decorations.frames.DelegatesFrameItemDecoration
 import com.revolut.decorations.overlay.DelegatesOverlayItemDecoration
 import com.revolut.recyclerkit.animations.FadeInAnimator
-import com.revolut.recyclerkit.delegates.DelegatesManager
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.sample.PaddingDecorations.PADDING_16DP
 import com.revolut.recyclerkit.sample.delegates.ImageFixedSizeTextDelegate
@@ -69,12 +68,13 @@ class MainActivity : AppCompatActivity() {
     ).toMutableList()
 
     private val adapter by lazy {
-        RxDiffAdapter(async = true, delegatesManager = DelegatesManager()
-            .addDelegate(
-                ImageFixedSizeTextDelegate { model -> onClick(model) }
-            ).addDelegate(
+        RxDiffAdapter(
+            async = true,
+            delegates = listOf(
+                ImageFixedSizeTextDelegate { model -> onClick(model) },
                 ImageWrapSizeTextDelegate { model -> onClick(model) }
-            ))
+            )
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
