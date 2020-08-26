@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.revolut.recyclerkit.delegates.AbsRecyclerDelegatesAdapter
 import com.revolut.recyclerkit.delegates.DelegatesManager
 import com.revolut.recyclerkit.delegates.ListItem
+import com.revolut.recyclerkit.delegates.RecyclerViewDelegate
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.processors.PublishProcessor
@@ -41,12 +42,24 @@ import java.util.concurrent.TimeUnit
 * @param autoScrollToTop if autoscroll is true then RecyclerView will be scrolled to zero item on update
 * if last zero item was completely visible (i.e. zero scroll).
 */
-open class RxDiffAdapter constructor(
-    delegatesManager: DelegatesManager = DelegatesManager(),
+open class RxDiffAdapter @Deprecated("Replace with constructor without delegates") constructor(
+    delegatesManager: DelegatesManager,
     val async: Boolean = false,
     private val autoScrollToTop: Boolean = false,
     private val detectMoves: Boolean = true
 ) : AbsRecyclerDelegatesAdapter(delegatesManager) {
+
+    constructor(
+        async: Boolean = false,
+        autoScrollToTop: Boolean = false,
+        detectMoves: Boolean = true,
+        delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>
+    ) : this(
+        async = async,
+        autoScrollToTop = autoScrollToTop,
+        detectMoves = detectMoves,
+        delegatesManager = DelegatesManager(delegates)
+    )
 
     private class Queue<T>(
         val processor: PublishProcessor<T>,
@@ -107,7 +120,7 @@ open class RxDiffAdapter constructor(
     fun onDetachedFromWindow() = queue?.disposable?.dispose()
 
     private fun dispatchDiffInternal(diffResult: DiffUtil.DiffResult, newList: List<ListItem>) {
-        val rv = recyclerView.get() ?: throw IllegalStateException("Recycler View not attached")
+        val rv = recyclerView.get() ?: error("Recycler View not attached")
 
         val firstVisiblePosition = when (val lm = rv.layoutManager) {
             is LinearLayoutManager -> lm.findFirstVisibleItemPosition()
