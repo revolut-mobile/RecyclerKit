@@ -123,7 +123,7 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
         val rv = recyclerView.get() ?: error("Recycler View not attached")
 
         val firstVisiblePosition = when (val lm = rv.layoutManager) {
-            is LinearLayoutManager -> lm.findFirstVisibleItemPosition()
+            is LinearLayoutManager -> lm.findFirstCompletelyVisibleItemPosition()
             else -> 0
         }
 
