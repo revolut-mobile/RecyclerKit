@@ -26,12 +26,12 @@ androidExtensions {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation "androidx.recyclerview:recyclerview:$recycler_version"
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
     api 'com.thedeanda:lorem:2.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation project(':animators')
     implementation project(':delegates')
     implementation project(':decorations')

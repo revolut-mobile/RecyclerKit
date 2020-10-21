@@ -15,6 +15,10 @@ android {
 
     }
 
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -28,13 +32,13 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "androidx.recyclerview:recyclerview:$recycler_version"
 
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test:runner:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.robolectric:robolectric:4.4'
     testImplementation 'com.nhaarman:mockito-kotlin:1.5.0'
-    testImplementation "org.mockito:mockito-core:3.0.0"
+    testImplementation "org.mockito:mockito-core:3.5.10"
 
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
@@ -46,7 +50,7 @@ repositories {
 publish {
     def groupProjectID = 'com.revolut.recyclerkit'
     def artifactProjectID = 'animators'
-    def publishVersionID = '1.0.10'
+    def publishVersionID = '1.0.11'
 
     bintrayUser = System.getenv("BINTRAY_USER")
     bintrayKey = System.getenv("BINTRAY_KEY")
