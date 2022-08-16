@@ -40,12 +40,12 @@ class ImageFixedSizeTextDelegate(
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder =
         ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.image_fixed_size_text_delegate, parent, false))
 
-    override fun onBindViewHolder(holder: ViewHolder, data: Model, pos: Int, payloads: List<Any>?) {
+    override fun onBindViewHolder(holder: ViewHolder, data: Model, pos: Int, payloads: List<Any>) {
         super.onBindViewHolder(holder, data, pos, payloads)
-        payloads?.filterIsInstance<Payload>()
-            ?.forEach { payload -> holder.applyPayload(payload) }
+        payloads.filterIsInstance<Payload>()
+            .forEach { payload -> holder.applyPayload(payload) }
 
-        holder.takeIf { payloads.isNullOrEmpty() }?.applyData(data)
+        holder.takeIf { payloads.isEmpty() }?.applyData(data)
     }
 
     private fun ViewHolder.applyPayload(payload: Payload) {

@@ -30,7 +30,7 @@ abstract class BaseRecyclerViewDelegate<T : ListItem, VH : BaseRecyclerViewHolde
     override fun suitFor(position: Int, data: Any): Boolean = rule(position, data)
 
     @CallSuper
-    override fun onBindViewHolder(holder: VH, data: T, pos: Int, payloads: List<Any>?) {
+    override fun onBindViewHolder(holder: VH, data: T, pos: Int, payloads: List<Any>) {
         holder.lastBoundItem = data
     }
 

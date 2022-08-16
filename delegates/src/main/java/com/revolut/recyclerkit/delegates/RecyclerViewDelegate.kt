@@ -30,7 +30,7 @@ interface RecyclerViewDelegate<T : ListItem, VH> where VH : RecyclerView.ViewHol
 
     fun onCreateViewHolder(parent: ViewGroup): VH
 
-    fun onBindViewHolder(holder: VH, data: T, pos: Int, payloads: List<Any>?)
+    fun onBindViewHolder(holder: VH, data: T, pos: Int, payloads: List<Any>)
 
     fun onViewAttachedToWindow(holder: VH)
 
