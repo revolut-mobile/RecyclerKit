@@ -2,7 +2,7 @@
 
 buildscript {
     ext.kotlin_version = '1.6.20'
-    ext.recycler_version = '1.1.0'
+    ext.recycler_version = '1.2.1'
 
     repositories {
         google()
