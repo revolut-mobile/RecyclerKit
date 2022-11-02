@@ -1,7 +1,9 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.vanniktech.maven.publish'
 
 android {
     compileSdkVersion 29
@@ -44,20 +46,8 @@ dependencies {
     testImplementation "org.mockito:mockito-core:3.5.10"
 }
 
-publish {
-    def groupProjectID = 'com.revolut.recyclerkit'
-    def artifactProjectID = 'decorations'
-    def publishVersionID = '1.0.8'
-
-    bintrayUser = System.getenv("BINTRAY_USER")
-    bintrayKey = System.getenv("BINTRAY_KEY")
-
-    userOrg = 'revolut-mobile'
-    repoName = 'RecyclerKit'
-    groupId = groupProjectID
-    artifactId = artifactProjectID
-    publishVersion = publishVersionID
-    desc = "RecyclerKit Decorations"
-    website = "https://github.com/revolut-mobile/RecyclerKit"
-
+plugins.withId("com.vanniktech.maven.publish") {
+    mavenPublish {
+        sonatypeHost = SonatypeHost.S01
+    }
 }
