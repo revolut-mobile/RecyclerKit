@@ -17,16 +17,17 @@ internal object Preconditions {
             if (delegate is HasNestedDelegates) {
                 checkForDuplicateDelegates(delegate.delegates)
             } else {
-                val possibleDuplicates = delegates.groupingBy { it::class.java }.eachCount()
+                val possibleDuplicates = delegates.groupingBy { it.viewType }.eachCount()
                 val hasAnyDuplicates = possibleDuplicates.any { it.value > 1 }
 
                 if (hasAnyDuplicates) {
                     val message = "Duplicate delegates detected:\n${possibleDuplicates.mapToString()}"
+                    val error = IllegalArgumentException(message)
 
                     if (throwErrorsEnabled) {
-                        throw IllegalArgumentException(message)
+                        throw error
                     } else {
-                        Log.w(TAG, message)
+                        Log.e(TAG, message, error)
                     }
                 }
             }

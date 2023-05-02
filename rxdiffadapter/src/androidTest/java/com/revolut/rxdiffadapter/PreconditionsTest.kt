@@ -80,7 +80,7 @@ class PreconditionsTest {
     }
 
     class TestDelegateB : BaseRecyclerViewDelegate<TestDelegateB.Model, TestDelegateB.ViewHolder>(
-        viewType = 0,
+        viewType = 1,
         rule = { _, _ -> true }
     ) {
 
@@ -94,7 +94,7 @@ class PreconditionsTest {
     class TestInnerDelegatesDelegate(
         override val delegates: List<RecyclerViewDelegate<*, *>>,
     ) : BaseRecyclerViewDelegate<Model, ViewHolder>(
-        viewType = 0,
+        viewType = 2,
         rule = { _, _ -> true }
     ), HasNestedDelegates {
 
