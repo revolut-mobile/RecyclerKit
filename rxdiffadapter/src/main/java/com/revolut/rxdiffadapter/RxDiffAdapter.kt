@@ -49,6 +49,13 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     private val detectMoves: Boolean = true
 ) : AbsRecyclerDelegatesAdapter(delegatesManager) {
 
+    companion object {
+
+        fun setThrowErrorsOnPreconditions(enabled: Boolean) {
+            Preconditions.throwErrorsEnabled = enabled
+        }
+    }
+
     constructor(
         async: Boolean = false,
         autoScrollToTop: Boolean = false,
@@ -58,7 +65,7 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
         async = async,
         autoScrollToTop = autoScrollToTop,
         detectMoves = detectMoves,
-        delegatesManager = DelegatesManager(delegates)
+        delegatesManager = DelegatesManager(delegates).also { Preconditions.checkForDuplicateDelegates(delegates) }
     )
 
     private class Queue<T>(
@@ -192,5 +199,4 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
             }
         }
     }
-
 }
