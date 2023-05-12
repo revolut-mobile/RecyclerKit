@@ -1,6 +1,42 @@
-RecyclerKit
-============
+# RecyclerKit
+![Version](https://img.shields.io/github/license/revolut-mobile/RecyclerKit) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
+## Installation
+
+Gradle is the only supported build configuration. Since 1.1 RecyclerKit is hosted on mavenCentral,
+in order to fetch the dependency, add the following lines to your project level `build.gradle.kts`:
+
+```
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+```
+
+And then to the module level `build.gradle.kts`:
+
+```
+dependencies {
+    implementation 'com.revolut.recyclerkit:delegates:1.1.0'
+    implementation 'com.revolut.recyclerkit:rxdiffadapter:1.1.0'
+    implementation 'com.revolut.recyclerkit:decorations:1.1.0'
+    implementation 'com.revolut.recyclerkit:kextensions:1.1.0'
+    implementation 'com.revolut.recyclerkit:animators:1.1.0'
+}
+```
+
+## Snapshots
+
+For using snapshot dependencies use the separate repository:
+
+```
+allprojects {
+    repositories {
+        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
+    }
+}
+```
 
 License
 -------
