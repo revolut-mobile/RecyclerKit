@@ -44,7 +44,7 @@ class DelegatesManager(
                 return delegate.viewType
             }
         }
-        error("No delegate found for position $position and object $data ")
+        error("No delegate found for position $position and object ${data.javaClass} - $data")
     }
 
     fun addDelegate(delegate: RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>): DelegatesManager {
