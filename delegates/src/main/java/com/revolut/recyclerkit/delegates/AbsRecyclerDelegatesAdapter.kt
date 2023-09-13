@@ -26,6 +26,8 @@ abstract class AbsRecyclerDelegatesAdapter(
     val delegatesManager: DelegatesManager = DelegatesManager()
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    abstract val items: List<ListItem>
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         delegatesManager.getDelegateFor(viewType).onCreateViewHolder(parent)
 
@@ -62,5 +64,7 @@ abstract class AbsRecyclerDelegatesAdapter(
     override fun getItemViewType(position: Int): Int = delegatesManager.getViewTypeFor(position, getItem(position) as Any)
 
     abstract fun getItem(position: Int): ListItem
+
+    abstract fun setItems(items: List<ListItem>)
 
 }

@@ -34,9 +34,12 @@ class DiffAdapter(
         AsyncDifferConfig.Builder(ListDiffCallback<ListItem>()).build()
     )
 
+    override val items: List<ListItem>
+        get() = differ.currentList
+
     override fun getItem(position: Int): ListItem = differ.currentList[position]
 
-    fun setItems(items: List<ListItem>) = differ.submitList(items)
+    override fun setItems(items: List<ListItem>) = differ.submitList(items)
 
     override fun getItemCount() = differ.currentList.size
 
