@@ -5,7 +5,6 @@ import android.os.Looper
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.RecyclerView
 import com.revolut.recyclerkit.delegates.DefaultDiffAdapter
-import com.revolut.recyclerkit.delegates.DelegatesManager
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.delegates.RecyclerViewDelegate
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -40,12 +39,12 @@ import java.util.concurrent.TimeUnit
 * @param autoScrollToTop if autoscroll is true then RecyclerView will be scrolled to zero item on update
 * if last zero item was completely visible (i.e. zero scroll).
 */
-open class RxDiffAdapter @Deprecated("Replace with constructor without delegates") constructor(
-    delegatesManager: DelegatesManager,
+open class RxDiffAdapter @Deprecated("Replace with constructor without the async flag") constructor(
+    delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>> = emptyList(),
     val async: Boolean = false,
     private val autoScrollToTop: Boolean = false,
     private val detectMoves: Boolean = true
-) : DefaultDiffAdapter(delegatesManager = delegatesManager, autoScrollToTop = autoScrollToTop, detectMoves = detectMoves) {
+) : DefaultDiffAdapter(delegates = delegates, autoScrollToTop = autoScrollToTop, detectMoves = detectMoves) {
 
     companion object {
 
@@ -65,18 +64,9 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
         delegates = delegates
     )
 
-    @Deprecated("Replace with constructor without the async flag")
-    constructor(
-        async: Boolean = false,
-        autoScrollToTop: Boolean = false,
-        detectMoves: Boolean = true,
-        delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>
-    ) : this(
-        async = async,
-        autoScrollToTop = autoScrollToTop,
-        detectMoves = detectMoves,
-        delegatesManager = DelegatesManager(delegates).also { Preconditions.checkForDuplicateDelegates(delegates) }
-    )
+    init {
+        Preconditions.checkForDuplicateDelegates(delegates)
+    }
 
     private class Queue<T>(
         val processor: PublishProcessor<T>,
