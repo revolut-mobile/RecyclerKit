@@ -5,6 +5,7 @@ import android.os.Looper
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.RecyclerView
 import com.revolut.recyclerkit.delegates.DefaultDiffAdapter
+import com.revolut.recyclerkit.delegates.DelegatesManager
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.delegates.RecyclerViewDelegate
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -34,17 +35,16 @@ import java.util.concurrent.TimeUnit
 /*
 * @param async if async is true then difference between new and old items will be calculated on worker thread, otherwise
 * it will be calculated synchronously on the main thread right inside setItems().
-* Use com.revolut.recyclerkit.delegates.DefaultDiffAdapter if async is false.
 * [AsyncDiffRecyclerView] is obligatory for async mode.
 * @param autoScrollToTop if autoscroll is true then RecyclerView will be scrolled to zero item on update
 * if last zero item was completely visible (i.e. zero scroll).
 */
-open class RxDiffAdapter @Deprecated("Replace with constructor without the async flag") constructor(
-    delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>> = emptyList(),
+open class RxDiffAdapter @Deprecated("Replace with constructor without delegates") constructor(
+    delegatesManager: DelegatesManager,
     val async: Boolean = false,
     private val autoScrollToTop: Boolean = false,
     private val detectMoves: Boolean = true
-) : DefaultDiffAdapter(delegates = delegates, autoScrollToTop = autoScrollToTop, detectMoves = detectMoves) {
+) : DefaultDiffAdapter(delegatesManager = delegatesManager, autoScrollToTop = autoScrollToTop, detectMoves = detectMoves) {
 
     companion object {
 
@@ -54,19 +54,16 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without the async
     }
 
     constructor(
+        async: Boolean = false,
         autoScrollToTop: Boolean = false,
         detectMoves: Boolean = true,
         delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>
-    ): this(
-        async = true,
+    ) : this(
+        async = async,
         autoScrollToTop = autoScrollToTop,
         detectMoves = detectMoves,
-        delegates = delegates
+        delegatesManager = DelegatesManager(delegates).also { Preconditions.checkForDuplicateDelegates(delegates) }
     )
-
-    init {
-        Preconditions.checkForDuplicateDelegates(delegates)
-    }
 
     private class Queue<T>(
         val processor: PublishProcessor<T>,

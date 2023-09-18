@@ -31,10 +31,10 @@ import java.lang.ref.WeakReference
 */
 
 open class DefaultDiffAdapter(
-    delegates: List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>> = emptyList(),
+    delegatesManager: DelegatesManager = DelegatesManager(),
     private val autoScrollToTop: Boolean = false,
     private val detectMoves: Boolean = true,
-): AbsRecyclerDelegatesAdapter(DelegatesManager(delegates)) {
+): AbsRecyclerDelegatesAdapter(delegatesManager) {
 
     interface ListWrapper<T> : List<T> {
         fun clear()
