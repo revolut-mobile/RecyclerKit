@@ -82,7 +82,7 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     private class CopyOnWriteListWrapper<T> : CopyOnWriteArrayList<T>(), ListWrapper<T>
     private class ArrayListListWrapper<T> : ArrayList<T>(), ListWrapper<T>
 
-    override val items: ListWrapper<ListItem> = if (async) CopyOnWriteListWrapper() else ArrayListListWrapper()
+    val items: ListWrapper<ListItem> = if (async) CopyOnWriteListWrapper() else ArrayListListWrapper()
 
     private var recyclerView = WeakReference<RecyclerView>(null)
     private var queue: Queue<List<ListItem>>? = null
@@ -114,7 +114,7 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     }
 
     @UiThread
-    override fun setItems(items: List<ListItem>) {
+    open fun setItems(items: List<ListItem>) {
         check(Looper.myLooper() == Looper.getMainLooper()) { "RxDiffAdapter.setItems() was called from worker thread" }
 
         if (async) {

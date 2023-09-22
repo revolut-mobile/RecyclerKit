@@ -28,7 +28,7 @@ import java.lang.ref.WeakReference
  *
  */
 
-class DiffAdapter(
+open class DiffAdapter(
     delegatesManager: DelegatesManager = DelegatesManager(),
     autoScrollToTop: Boolean = false
 ) : AbsRecyclerDelegatesAdapter(delegatesManager) {
@@ -51,12 +51,12 @@ class DiffAdapter(
             null
         }
 
-    override val items: List<ListItem>
+    val items: List<ListItem>
         get() = differ.currentList
 
     override fun getItem(position: Int): ListItem = differ.currentList[position]
 
-    override fun setItems(items: List<ListItem>) = differ.submitList(items, commitCallback)
+    fun setItems(items: List<ListItem>) = differ.submitList(items, commitCallback)
 
     override fun getItemCount() = differ.currentList.size
 
