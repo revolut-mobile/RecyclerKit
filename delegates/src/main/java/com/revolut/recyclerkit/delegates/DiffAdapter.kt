@@ -5,6 +5,9 @@ import androidx.recyclerview.widget.AdapterListUpdateCallback
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import java.lang.ref.WeakReference
 
 /*
  * Copyright (C) 2019 Revolut
@@ -26,22 +29,41 @@ import androidx.recyclerview.widget.DiffUtil
  */
 
 class DiffAdapter(
-    delegatesManager: DelegatesManager = DelegatesManager()
+    delegatesManager: DelegatesManager = DelegatesManager(),
+    autoScrollToTop: Boolean = false
 ) : AbsRecyclerDelegatesAdapter(delegatesManager) {
 
     private val differ: AsyncListDiffer<ListItem> = AsyncListDiffer(
         AdapterListUpdateCallback(this),
         AsyncDifferConfig.Builder(ListDiffCallback<ListItem>()).build()
     )
+    private var recyclerView = WeakReference<RecyclerView>(null)
+    private val commitCallback: Runnable? =
+        if (autoScrollToTop) {
+            Runnable {
+                val rv = this.recyclerView.get() ?: error("Recycler View not attached")
+                val firstVisiblePosition = (rv.layoutManager as? LinearLayoutManager)?.findFirstCompletelyVisibleItemPosition() ?: 0
+                if (firstVisiblePosition == 0) {
+                    rv.scrollToPosition(0)
+                }
+            }
+        } else {
+            null
+        }
 
     override val items: List<ListItem>
         get() = differ.currentList
 
     override fun getItem(position: Int): ListItem = differ.currentList[position]
 
-    override fun setItems(items: List<ListItem>) = differ.submitList(items)
+    override fun setItems(items: List<ListItem>) = differ.submitList(items, commitCallback)
 
     override fun getItemCount() = differ.currentList.size
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = WeakReference(recyclerView)
+    }
 
     private class ListDiffCallback<T> : DiffUtil.ItemCallback<ListItem>() {
 

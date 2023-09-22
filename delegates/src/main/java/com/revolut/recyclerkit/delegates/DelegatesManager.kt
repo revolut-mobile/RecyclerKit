@@ -57,7 +57,7 @@ class DelegatesManager(
         return this
     }
 
-    fun getDelegates(): List<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>> {
+    fun getDelegates(): Collection<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>> {
         val delegateValues = ArrayList<RecyclerViewDelegate<out ListItem, out RecyclerView.ViewHolder>>(delegatesCache.size())
         for (index in 0 until delegatesCache.size()) {
             val delegate = delegatesCache.valueAt(index)

@@ -3,8 +3,10 @@ package com.revolut.rxdiffadapter
 import android.animation.ValueAnimator
 import android.os.Looper
 import androidx.annotation.UiThread
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.revolut.recyclerkit.delegates.DefaultDiffAdapter
+import com.revolut.recyclerkit.delegates.AbsRecyclerDelegatesAdapter
 import com.revolut.recyclerkit.delegates.DelegatesManager
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.delegates.RecyclerViewDelegate
@@ -12,6 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
+import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
@@ -44,7 +47,7 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     val async: Boolean = false,
     private val autoScrollToTop: Boolean = false,
     private val detectMoves: Boolean = true
-) : DefaultDiffAdapter(delegatesManager = delegatesManager, autoScrollToTop = autoScrollToTop, detectMoves = detectMoves) {
+) : AbsRecyclerDelegatesAdapter(delegatesManager) {
 
     companion object {
 
@@ -70,10 +73,18 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
         val disposable: Disposable
     )
 
+    interface ListWrapper<T> : List<T> {
+        fun clear()
+        operator fun set(index: Int, element: T): T
+        fun addAll(elements: Collection<T>): Boolean
+    }
+
     private class CopyOnWriteListWrapper<T> : CopyOnWriteArrayList<T>(), ListWrapper<T>
+    private class ArrayListListWrapper<T> : ArrayList<T>(), ListWrapper<T>
 
     override val items: ListWrapper<ListItem> = if (async) CopyOnWriteListWrapper() else ArrayListListWrapper()
 
+    private var recyclerView = WeakReference<RecyclerView>(null)
     private var queue: Queue<List<ListItem>>? = null
 
     private fun createQueue(): Queue<List<ListItem>> = PublishProcessor.create<List<ListItem>>().let {
@@ -115,12 +126,77 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
 
     fun onDetachedFromWindow() = queue?.disposable?.dispose()
 
+    private fun dispatchDiffInternal(diffResult: DiffUtil.DiffResult, newList: List<ListItem>) {
+        val rv = recyclerView.get() ?: error("Recycler View not attached")
+
+        val firstVisiblePosition = when (val lm = rv.layoutManager) {
+            is LinearLayoutManager -> lm.findFirstCompletelyVisibleItemPosition()
+            else -> 0
+        }
+
+        val dispatchDiff: () -> Unit = {
+            this.items.clear()
+            this.items.addAll(newList)
+
+            diffResult.dispatchUpdatesTo(this)
+        }
+
+        if (rv.isComputingLayout) {
+            rv.post { dispatchDiff() }
+        } else {
+            dispatchDiff()
+        }
+
+        if (autoScrollToTop && firstVisiblePosition == 0) {
+            rv.scrollToPosition(0)
+        }
+    }
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         check(!(async && (recyclerView !is AsyncDiffRecyclerView))) { "RxDiffAdapter in async mode must be used with AsyncDiffRecyclerView" }
+        this.recyclerView = WeakReference(recyclerView)
+    }
+
+    private fun calculateDiff(newList: List<ListItem>): Pair<DiffUtil.DiffResult, List<ListItem>> {
+        val diffResult = DiffUtil.calculateDiff(ListDiffCallback(this.items.toList(), newList), detectMoves)
+        return diffResult to newList
     }
 
     override fun getItem(position: Int): ListItem = items[position]
 
     override fun getItemCount(): Int = items.size
+
+    private class ListDiffCallback<T>(
+        private val oldList: List<T>,
+        private val newList: List<T>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+            return if (oldItem is ListItem && newItem is ListItem) {
+                oldItem.listId == newItem.listId
+            } else {
+                oldItem == newItem
+            }
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldList[oldItemPosition]?.equals(newList[newItemPosition]) ?: false
+
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            val oldData = oldList[oldItemPosition] as Any
+            val newData = newList[newItemPosition] as Any
+
+            return if (newData is ListItem) {
+                newData.calculatePayload(oldData)
+            } else {
+                null
+            }
+        }
+    }
 }
