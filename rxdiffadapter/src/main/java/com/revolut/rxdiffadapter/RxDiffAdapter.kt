@@ -6,15 +6,14 @@ import androidx.annotation.UiThread
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.revolut.recyclerkit.delegates.AbsRecyclerDelegatesAdapter
 import com.revolut.recyclerkit.delegates.DelegatesManager
+import com.revolut.recyclerkit.delegates.DiffAdapter
 import com.revolut.recyclerkit.delegates.ListItem
 import com.revolut.recyclerkit.delegates.RecyclerViewDelegate
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
-import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
@@ -47,7 +46,7 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     val async: Boolean = false,
     private val autoScrollToTop: Boolean = false,
     private val detectMoves: Boolean = true
-) : AbsRecyclerDelegatesAdapter(delegatesManager) {
+) : DiffAdapter(delegatesManager = delegatesManager, async = async, autoScrollToTop = autoScrollToTop) {
 
     companion object {
 
@@ -82,9 +81,8 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     private class CopyOnWriteListWrapper<T> : CopyOnWriteArrayList<T>(), ListWrapper<T>
     private class ArrayListListWrapper<T> : ArrayList<T>(), ListWrapper<T>
 
-    val items: ListWrapper<ListItem> = if (async) CopyOnWriteListWrapper() else ArrayListListWrapper()
+    override val items: ListWrapper<ListItem> = if (async) CopyOnWriteListWrapper() else ArrayListListWrapper()
 
-    private var recyclerView = WeakReference<RecyclerView>(null)
     private var queue: Queue<List<ListItem>>? = null
 
     private fun createQueue(): Queue<List<ListItem>> = PublishProcessor.create<List<ListItem>>().let {
@@ -114,7 +112,7 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     }
 
     @UiThread
-    open fun setItems(items: List<ListItem>) {
+    override fun setItems(items: List<ListItem>) {
         check(Looper.myLooper() == Looper.getMainLooper()) { "RxDiffAdapter.setItems() was called from worker thread" }
 
         if (async) {
@@ -155,7 +153,6 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         check(!(async && (recyclerView !is AsyncDiffRecyclerView))) { "RxDiffAdapter in async mode must be used with AsyncDiffRecyclerView" }
-        this.recyclerView = WeakReference(recyclerView)
     }
 
     private fun calculateDiff(newList: List<ListItem>): Pair<DiffUtil.DiffResult, List<ListItem>> {

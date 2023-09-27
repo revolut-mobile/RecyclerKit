@@ -1,6 +1,8 @@
 package com.revolut.recyclerkit.delegates
 
 import android.annotation.SuppressLint
+import android.os.Handler
+import android.os.Looper
 import androidx.recyclerview.widget.AdapterListUpdateCallback
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -8,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.lang.ref.WeakReference
+import java.util.concurrent.Executor
 
 /*
  * Copyright (C) 2019 Revolut
@@ -30,33 +33,43 @@ import java.lang.ref.WeakReference
 
 open class DiffAdapter(
     delegatesManager: DelegatesManager = DelegatesManager(),
-    autoScrollToTop: Boolean = false
+    async: Boolean = true,
+    private val autoScrollToTop: Boolean = false
 ) : AbsRecyclerDelegatesAdapter(delegatesManager) {
 
     private val differ: AsyncListDiffer<ListItem> = AsyncListDiffer(
         AdapterListUpdateCallback(this),
-        AsyncDifferConfig.Builder(ListDiffCallback<ListItem>()).build()
-    )
-    private var recyclerView = WeakReference<RecyclerView>(null)
-    private val commitCallback: Runnable? =
-        if (autoScrollToTop) {
-            Runnable {
-                val rv = this.recyclerView.get() ?: error("Recycler View not attached")
-                val firstVisiblePosition = (rv.layoutManager as? LinearLayoutManager)?.findFirstCompletelyVisibleItemPosition() ?: 0
-                if (firstVisiblePosition == 0) {
-                    rv.scrollToPosition(0)
+        AsyncDifferConfig.Builder(ListDiffCallback<ListItem>())
+            .apply {
+                if (!async) {
+                    setBackgroundThreadExecutor(MainThreadExecutor())
                 }
             }
-        } else {
-            null
-        }
+            .build()
+    )
+    protected var recyclerView = WeakReference<RecyclerView>(null)
 
-    val items: List<ListItem>
+    open val items: List<ListItem>
         get() = differ.currentList
 
     override fun getItem(position: Int): ListItem = differ.currentList[position]
 
-    fun setItems(items: List<ListItem>) = differ.submitList(items, commitCallback)
+    open fun setItems(items: List<ListItem>) {
+        val rv = recyclerView.get() ?: error("Recycler View not attached")
+        val layoutManager = rv.layoutManager
+
+        val firstVisiblePosition = if (autoScrollToTop && layoutManager is LinearLayoutManager) {
+            layoutManager.findFirstCompletelyVisibleItemPosition()
+        } else {
+            -1
+        }
+
+        differ.submitList(items) {
+            if (firstVisiblePosition == 0) {
+                rv.scrollToPosition(0)
+            }
+        }
+    }
 
     override fun getItemCount() = differ.currentList.size
 
@@ -81,4 +94,10 @@ open class DiffAdapter(
         }
     }
 
+    private class MainThreadExecutor : Executor {
+        private val handler = Handler(Looper.getMainLooper());
+        override fun execute(runnable: Runnable) {
+            handler.post(runnable)
+        }
+    }
 }
