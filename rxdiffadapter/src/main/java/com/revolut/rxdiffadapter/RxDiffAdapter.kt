@@ -163,37 +163,4 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     override fun getItem(position: Int): ListItem = items[position]
 
     override fun getItemCount(): Int = items.size
-
-    private class ListDiffCallback<T>(
-        private val oldList: List<T>,
-        private val newList: List<T>
-    ) : DiffUtil.Callback() {
-
-        override fun getOldListSize(): Int = oldList.size
-
-        override fun getNewListSize(): Int = newList.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = oldList[oldItemPosition]
-            val newItem = newList[newItemPosition]
-            return if (oldItem is ListItem && newItem is ListItem) {
-                oldItem.listId == newItem.listId
-            } else {
-                oldItem == newItem
-            }
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldList[oldItemPosition]?.equals(newList[newItemPosition]) ?: false
-
-        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-            val oldData = oldList[oldItemPosition] as Any
-            val newData = newList[newItemPosition] as Any
-
-            return if (newData is ListItem) {
-                newData.calculatePayload(oldData)
-            } else {
-                null
-            }
-        }
-    }
 }

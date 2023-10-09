@@ -1,8 +1,6 @@
 package com.revolut.recyclerkit.delegates
 
 import android.annotation.SuppressLint
-import android.os.Handler
-import android.os.Looper
 import androidx.recyclerview.widget.AdapterListUpdateCallback
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -10,7 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.lang.ref.WeakReference
-import java.util.concurrent.Executor
 
 /*
  * Copyright (C) 2019 Revolut
@@ -34,51 +31,110 @@ import java.util.concurrent.Executor
 open class DiffAdapter(
     delegatesManager: DelegatesManager = DelegatesManager(),
     async: Boolean = true,
-    private val autoScrollToTop: Boolean = false
+    autoScrollToTop: Boolean = false
 ) : AbsRecyclerDelegatesAdapter(delegatesManager) {
 
-    private val differ: AsyncListDiffer<ListItem> = AsyncListDiffer(
-        AdapterListUpdateCallback(this),
-        AsyncDifferConfig.Builder(ListDiffCallback<ListItem>())
-            .apply {
-                if (!async) {
-                    setBackgroundThreadExecutor(MainThreadExecutor())
-                }
-            }
-            .build()
-    )
+    private interface DifferDelegate {
+        val items: List<ListItem>
+        fun setItems(items: List<ListItem>, recyclerView: RecyclerView)
+    }
+
+    private val differDelegate = if (async) AsyncDifferDelegate(this, autoScrollToTop) else SyncDifferDelegate(this, autoScrollToTop)
     protected var recyclerView = WeakReference<RecyclerView>(null)
+        private set
 
     open val items: List<ListItem>
-        get() = differ.currentList
+        get() = differDelegate.items
 
-    override fun getItem(position: Int): ListItem = differ.currentList[position]
+    override fun getItem(position: Int): ListItem = differDelegate.items[position]
 
     open fun setItems(items: List<ListItem>) {
         val rv = recyclerView.get() ?: error("Recycler View not attached")
-        val layoutManager = rv.layoutManager
-
-        val firstVisiblePosition = if (autoScrollToTop && layoutManager is LinearLayoutManager) {
-            layoutManager.findFirstCompletelyVisibleItemPosition()
-        } else {
-            -1
-        }
-
-        differ.submitList(items) {
-            if (firstVisiblePosition == 0) {
-                rv.scrollToPosition(0)
-            }
-        }
+        differDelegate.setItems(items, rv)
     }
 
-    override fun getItemCount() = differ.currentList.size
+    override fun getItemCount() = differDelegate.items.size
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = WeakReference(recyclerView)
     }
 
-    private class ListDiffCallback<T> : DiffUtil.ItemCallback<ListItem>() {
+    private class AsyncDifferDelegate(
+        adapter: RecyclerView.Adapter<*>,
+        private val autoScrollToTop: Boolean
+    ) : DifferDelegate {
+        private val differ: AsyncListDiffer<ListItem> = AsyncListDiffer(
+            AdapterListUpdateCallback(adapter),
+            AsyncDifferConfig.Builder(ListDiffItemCallback<ListItem>()).build()
+        )
+        override val items: List<ListItem>
+            get() = differ.currentList
+
+        override fun setItems(items: List<ListItem>, recyclerView: RecyclerView) {
+            val layoutManager = recyclerView.layoutManager
+
+            val firstVisiblePosition = if (autoScrollToTop && layoutManager is LinearLayoutManager) {
+                layoutManager.findFirstCompletelyVisibleItemPosition()
+            } else {
+                -1
+            }
+
+            differ.submitList(items) {
+                if (firstVisiblePosition == 0) {
+                    recyclerView.scrollToPosition(0)
+                }
+            }
+        }
+    }
+
+    private class SyncDifferDelegate(
+        private val adapter: RecyclerView.Adapter<*>,
+        private val autoScrollToTop: Boolean
+    ) : DifferDelegate {
+        override val items = ArrayList<ListItem>()
+
+        override fun setItems(items: List<ListItem>, recyclerView: RecyclerView) {
+            val (diffResult, newList) = calculateDiff(items)
+            dispatchDiffInternal(diffResult, newList, recyclerView)
+        }
+
+        private fun dispatchDiffInternal(diffResult: DiffUtil.DiffResult, newList: List<ListItem>, recyclerView: RecyclerView) {
+            val firstVisiblePosition = if (autoScrollToTop) {
+                when (val lm = recyclerView.layoutManager) {
+                    is LinearLayoutManager -> lm.findFirstCompletelyVisibleItemPosition()
+                    else -> 0
+                }
+            } else {
+                -1
+            }
+
+            val dispatchDiff: () -> Unit = {
+                items.clear()
+                items.addAll(newList)
+
+                diffResult.dispatchUpdatesTo(adapter)
+            }
+
+            if (recyclerView.isComputingLayout) {
+                recyclerView.post { dispatchDiff() }
+            } else {
+                dispatchDiff()
+            }
+
+            if (firstVisiblePosition == 0) {
+                recyclerView.scrollToPosition(0)
+            }
+        }
+
+        private fun calculateDiff(newList: List<ListItem>): Pair<DiffUtil.DiffResult, List<ListItem>> {
+            val diffResult = DiffUtil.calculateDiff(ListDiffCallback(items, newList), true)
+            return diffResult to newList
+        }
+
+    }
+
+    private class ListDiffItemCallback<T> : DiffUtil.ItemCallback<ListItem>() {
 
         override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
             return oldItem.listId == newItem.listId
@@ -94,10 +150,36 @@ open class DiffAdapter(
         }
     }
 
-    private class MainThreadExecutor : Executor {
-        private val handler = Handler(Looper.getMainLooper());
-        override fun execute(runnable: Runnable) {
-            handler.post(runnable)
+    protected class ListDiffCallback<T>(
+        private val oldList: List<T>,
+        private val newList: List<T>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+            return if (oldItem is ListItem && newItem is ListItem) {
+                oldItem.listId == newItem.listId
+            } else {
+                oldItem == newItem
+            }
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldList[oldItemPosition]?.equals(newList[newItemPosition]) ?: false
+
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            val oldData = oldList[oldItemPosition] as Any
+            val newData = newList[newItemPosition] as Any
+
+            return if (newData is ListItem) {
+                newData.calculatePayload(oldData)
+            } else {
+                null
+            }
         }
     }
 }
