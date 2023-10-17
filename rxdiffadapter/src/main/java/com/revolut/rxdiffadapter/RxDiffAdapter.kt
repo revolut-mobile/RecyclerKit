@@ -3,8 +3,6 @@ package com.revolut.rxdiffadapter
 import android.animation.ValueAnimator
 import android.os.Looper
 import androidx.annotation.UiThread
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.revolut.recyclerkit.delegates.DelegatesManager
 import com.revolut.recyclerkit.delegates.DiffAdapter
@@ -67,37 +65,24 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
         delegatesManager = DelegatesManager(delegates).also { Preconditions.checkForDuplicateDelegates(delegates) }
     )
 
-    private class Queue<T>(
-        val processor: PublishProcessor<T>,
-        val disposable: Disposable
-    )
-
     interface ListWrapper<T> : List<T> {
         fun clear()
         operator fun set(index: Int, element: T): T
         fun addAll(elements: Collection<T>): Boolean
     }
 
-    private class CopyOnWriteListWrapper<T> : CopyOnWriteArrayList<T>(), ListWrapper<T>
-    private class ArrayListListWrapper<T> : ArrayList<T>(), ListWrapper<T>
-
-    override val items: ListWrapper<ListItem> = if (async) CopyOnWriteListWrapper() else ArrayListListWrapper()
-
-    private var queue: Queue<List<ListItem>>? = null
-
-    private fun createQueue(): Queue<List<ListItem>> = PublishProcessor.create<List<ListItem>>().let {
-        Queue(
-            processor = it,
-            disposable = it.onBackpressureLatest().throttleLast(ValueAnimator.getFrameDelay(), TimeUnit.MILLISECONDS)
-                .observeOn(Schedulers.single())
-                .map { newList -> calculateDiff(newList) }
-                .observeOn(AndroidSchedulers.mainThread(), false, 1)
-                .subscribe { (diffResult, newList) -> dispatchDiffInternal(diffResult, newList) }
-        )
+    private interface RxDifferDelegate : DifferDelegate {
+        override val items: ListWrapper<ListItem>
+        fun onDetachFromWindow()
     }
 
-    private fun getOrCreateQueue(): Queue<List<ListItem>> =
-        queue?.takeUnless { it.disposable.isDisposed } ?: createQueue().apply { queue = this }
+    private val differDelegate: RxDifferDelegate = if (async) {
+        RxAsyncDifferStrategy(this, autoScrollToTop, detectMoves)
+    } else {
+        RxSyncDifferStrategy(this, autoScrollToTop, detectMoves)
+    }
+
+    override val items: ListWrapper<ListItem> = differDelegate.items
 
     open fun updateItem(index: Int, item: ListItem) {
         if (index < itemCount) {
@@ -114,53 +99,77 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     @UiThread
     override fun setItems(items: List<ListItem>) {
         check(Looper.myLooper() == Looper.getMainLooper()) { "RxDiffAdapter.setItems() was called from worker thread" }
-
-        if (async) {
-            getOrCreateQueue().processor.onNext(items)
-        } else {
-            calculateDiff(items).let { (diffResult, newList) -> dispatchDiffInternal(diffResult, newList) }
-        }
+        differDelegate.setItems(items)
     }
 
-    fun onDetachedFromWindow() = queue?.disposable?.dispose()
-
-    private fun dispatchDiffInternal(diffResult: DiffUtil.DiffResult, newList: List<ListItem>) {
-        val rv = recyclerView.get() ?: error("Recycler View not attached")
-
-        val firstVisiblePosition = when (val lm = rv.layoutManager) {
-            is LinearLayoutManager -> lm.findFirstCompletelyVisibleItemPosition()
-            else -> 0
-        }
-
-        val dispatchDiff: () -> Unit = {
-            this.items.clear()
-            this.items.addAll(newList)
-
-            diffResult.dispatchUpdatesTo(this)
-        }
-
-        if (rv.isComputingLayout) {
-            rv.post { dispatchDiff() }
-        } else {
-            dispatchDiff()
-        }
-
-        if (autoScrollToTop && firstVisiblePosition == 0) {
-            rv.scrollToPosition(0)
-        }
+    fun onDetachedFromWindow() {
+        differDelegate.onDetachFromWindow()
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
         check(!(async && (recyclerView !is AsyncDiffRecyclerView))) { "RxDiffAdapter in async mode must be used with AsyncDiffRecyclerView" }
+        differDelegate.attachRecyclerView(recyclerView)
     }
 
-    private fun calculateDiff(newList: List<ListItem>): Pair<DiffUtil.DiffResult, List<ListItem>> {
-        val diffResult = DiffUtil.calculateDiff(ListDiffCallback(this.items.toList(), newList), detectMoves)
-        return diffResult to newList
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        differDelegate.detachRecyclerView(recyclerView)
     }
 
     override fun getItem(position: Int): ListItem = items[position]
 
     override fun getItemCount(): Int = items.size
+
+    private class RxAsyncDifferStrategy(
+        adapter: RecyclerView.Adapter<*>,
+        autoScrollToTop: Boolean,
+        detectMoves: Boolean
+    ) : SyncDifferStrategy(adapter, autoScrollToTop, detectMoves), RxDifferDelegate {
+        private class CopyOnWriteListWrapper<T> : CopyOnWriteArrayList<T>(), ListWrapper<T>
+
+        private class Queue<T>(
+            val processor: PublishProcessor<T>,
+            val disposable: Disposable
+        )
+
+        private var queue: Queue<List<ListItem>>? = null
+
+        private fun createQueue(): Queue<List<ListItem>> = PublishProcessor.create<List<ListItem>>().let {
+            Queue(
+                processor = it,
+                disposable = it.onBackpressureLatest().throttleLast(ValueAnimator.getFrameDelay(), TimeUnit.MILLISECONDS)
+                    .observeOn(Schedulers.single())
+                    .map { newList -> calculateDiff(newList) to newList }
+                    .observeOn(AndroidSchedulers.mainThread(), false, 1)
+                    .subscribe { (diffResult, newList) ->
+                        val rv = recyclerView.get() ?: error("Recycler View not attached")
+                        dispatchDiffInternal(diffResult, newList, rv)
+                    }
+            )
+        }
+
+        private fun getOrCreateQueue(): Queue<List<ListItem>> =
+            queue?.takeUnless { it.disposable.isDisposed } ?: createQueue().apply { queue = this }
+
+        override val items = CopyOnWriteListWrapper<ListItem>()
+
+        override fun setItems(items: List<ListItem>) {
+            getOrCreateQueue().processor.onNext(items)
+        }
+
+        override fun onDetachFromWindow() {
+            queue?.disposable?.dispose()
+        }
+    }
+
+    private class RxSyncDifferStrategy(
+        adapter: RecyclerView.Adapter<*>,
+        autoScrollToTop: Boolean,
+        detectMoves: Boolean
+    ) : SyncDifferStrategy(adapter, autoScrollToTop, detectMoves), RxDifferDelegate {
+        private class ArrayListListWrapper<T> : ArrayList<T>(), ListWrapper<T>
+
+        override val items = ArrayListListWrapper<ListItem>()
+
+        override fun onDetachFromWindow() = Unit
+    }
 }
