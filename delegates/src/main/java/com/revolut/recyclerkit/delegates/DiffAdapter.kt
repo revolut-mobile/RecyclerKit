@@ -130,9 +130,7 @@ open class DiffAdapter(
 
         override fun setItems(items: List<ListItem>) {
             val diffResult = calculateDiff(items)
-            this.items.clear()
-            this.items.addAll(items)
-            diffResult.dispatchUpdatesTo(adapter)
+            dispatchDiffInternal(diffResult, items, recyclerView.get() ?: error("Recycler View not attached"))
         }
 
         protected fun dispatchDiffInternal(diffResult: DiffUtil.DiffResult, newList: List<ListItem>, recyclerView: RecyclerView) {
