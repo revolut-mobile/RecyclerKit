@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import java.lang.ref.WeakReference
 
 /*
@@ -93,13 +94,8 @@ open class DiffAdapter(
         override fun setItems(items: List<ListItem>) {
             val recyclerViewRef = recyclerView
             val rv = recyclerViewRef.get() ?: error("Recycler View not attached")
-            val layoutManager = rv.layoutManager
 
-            val firstVisiblePosition = if (autoScrollToTop && layoutManager is LinearLayoutManager) {
-                layoutManager.findFirstCompletelyVisibleItemPosition()
-            } else {
-                -1
-            }
+            val firstVisiblePosition = rv.layoutManager.findFirstCompletelyVisibleItemPosition(autoScrollToTop)
 
             if (firstVisiblePosition == 0) {
                 differ.submitList(items) {
@@ -134,30 +130,23 @@ open class DiffAdapter(
         }
 
         protected fun dispatchDiffInternal(diffResult: DiffUtil.DiffResult, newList: List<ListItem>, recyclerView: RecyclerView) {
-            val firstVisiblePosition = if (autoScrollToTop) {
-                when (val lm = recyclerView.layoutManager) {
-                    is LinearLayoutManager -> lm.findFirstCompletelyVisibleItemPosition()
-                    else -> 0
-                }
-            } else {
-                -1
-            }
+            val firstVisiblePosition = recyclerView.layoutManager.findFirstCompletelyVisibleItemPosition(autoScrollToTop)
 
             val dispatchDiff: () -> Unit = {
                 items.clear()
                 items.addAll(newList)
 
                 diffResult.dispatchUpdatesTo(adapter)
+
+                if (firstVisiblePosition == 0) {
+                    recyclerView.scrollToPosition(0)
+                }
             }
 
             if (recyclerView.isComputingLayout) {
                 recyclerView.post { dispatchDiff() }
             } else {
                 dispatchDiff()
-            }
-
-            if (firstVisiblePosition == 0) {
-                recyclerView.scrollToPosition(0)
             }
         }
 
@@ -215,4 +204,13 @@ open class DiffAdapter(
             }
         }
     }
+}
+
+private fun LayoutManager?.findFirstCompletelyVisibleItemPosition(autoScrollToTop: Boolean): Int = if (autoScrollToTop) {
+    when (this) {
+        is LinearLayoutManager -> findFirstCompletelyVisibleItemPosition()
+        else -> 0
+    }
+} else {
+    -1
 }
