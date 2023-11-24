@@ -87,7 +87,6 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     private var recyclerView = WeakReference<RecyclerView>(null)
     private var queue: Queue<List<ListItem>>? = null
 
-    @Volatile
     private var lastDispatchDiffCallback: Runnable? = null
 
     private fun createQueue(): Queue<List<ListItem>> = PublishProcessor.create<List<ListItem>>().let {
@@ -155,6 +154,7 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
             lastDispatchDiffCallback = newDispatchDiffCallback
             rv.post(newDispatchDiffCallback)
         } else {
+            lastDispatchDiffCallback = null
             dispatchDiff()
         }
 
