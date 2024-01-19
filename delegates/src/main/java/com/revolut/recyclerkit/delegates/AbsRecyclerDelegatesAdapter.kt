@@ -30,13 +30,13 @@ abstract class AbsRecyclerDelegatesAdapter(
         delegatesManager.getDelegateFor(viewType).onCreateViewHolder(parent)
 
     @Suppress("unchecked_cast")
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<Any>) {
         (delegatesManager.getDelegateFor(holder.itemViewType) as RecyclerViewDelegate<ListItem, RecyclerView.ViewHolder>)
             .onBindViewHolder(holder, getItem(position), position, payloads)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        this.onBindViewHolder(holder, position, mutableListOf())
+        this.onBindViewHolder(holder, position, emptyList())
     }
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
