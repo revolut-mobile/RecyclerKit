@@ -116,6 +116,8 @@ open class DiffAdapter(
             private set
         override val items = mutableListOf<ListItem>()
 
+        private var lastDispatchDiffCallback: Runnable? = null
+
         override fun attachRecyclerView(recyclerView: RecyclerView) {
             this.recyclerView = WeakReference(recyclerView)
         }
@@ -133,6 +135,7 @@ open class DiffAdapter(
             val firstVisiblePosition = recyclerView.layoutManager.findFirstCompletelyVisibleItemPosition(autoScrollToTop)
 
             val dispatchDiff: () -> Unit = {
+                lastDispatchDiffCallback = null
                 items.clear()
                 items.addAll(newList)
 
@@ -143,8 +146,13 @@ open class DiffAdapter(
                 }
             }
 
+            lastDispatchDiffCallback?.let {
+                recyclerView.removeCallbacks(it)
+            }
             if (recyclerView.isComputingLayout) {
-                recyclerView.post { dispatchDiff() }
+                val newDispatchDiffCallback = Runnable { dispatchDiff() }
+                lastDispatchDiffCallback = newDispatchDiffCallback
+                recyclerView.post(newDispatchDiffCallback)
             } else {
                 dispatchDiff()
             }
