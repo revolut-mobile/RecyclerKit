@@ -120,7 +120,7 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     override fun getItemCount(): Int = items.size
 
     private class RxAsyncDifferStrategy(
-        adapter: RecyclerView.Adapter<*>,
+        adapter: DiffAdapter,
         autoScrollToTop: Boolean,
         detectMoves: Boolean
     ) : SyncDifferStrategy(adapter, autoScrollToTop, detectMoves), RxDifferDelegate {
@@ -162,7 +162,7 @@ open class RxDiffAdapter @Deprecated("Replace with constructor without delegates
     }
 
     private class RxSyncDifferStrategy(
-        adapter: RecyclerView.Adapter<*>,
+        adapter: DiffAdapter,
         autoScrollToTop: Boolean,
         detectMoves: Boolean
     ) : SyncDifferStrategy(adapter, autoScrollToTop, detectMoves), RxDifferDelegate {
