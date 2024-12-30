@@ -2,6 +2,7 @@ package com.revolut.recyclerkit.delegates
 
 import android.annotation.SuppressLint
 import android.os.Looper
+import android.os.SystemClock
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.AdapterListUpdateCallback
 import androidx.recyclerview.widget.AsyncDifferConfig
@@ -53,6 +54,8 @@ open class DiffAdapter(
     open val items: List<ListItem>
         get() = differDelegate.items
 
+    private var autoScrollToTopDisabledUntilTs = 0L
+
     override fun getItem(position: Int): ListItem = items[position]
 
     @UiThread
@@ -72,7 +75,7 @@ open class DiffAdapter(
     }
 
     private class AsyncDifferStrategy(
-        adapter: RecyclerView.Adapter<*>,
+        private val adapter: DiffAdapter,
         private val autoScrollToTop: Boolean
     ) : DifferDelegate {
         private val differ: AsyncListDiffer<ListItem> = AsyncListDiffer(
@@ -97,7 +100,7 @@ open class DiffAdapter(
 
             val firstVisiblePosition = rv.layoutManager.findFirstCompletelyVisibleItemPosition(autoScrollToTop)
 
-            if (firstVisiblePosition == 0) {
+            if (firstVisiblePosition == 0 && !adapter.autoScrollToTopTemporarilyDisabled()) {
                 differ.submitList(items) {
                     recyclerViewRef.get()?.scrollToPosition(0)
                 }
@@ -108,7 +111,7 @@ open class DiffAdapter(
     }
 
     protected open class SyncDifferStrategy(
-        private val adapter: RecyclerView.Adapter<*>,
+        private val adapter: DiffAdapter,
         private val autoScrollToTop: Boolean,
         private val detectMoves: Boolean,
     ) : DifferDelegate {
@@ -141,7 +144,7 @@ open class DiffAdapter(
 
                 diffResult.dispatchUpdatesTo(adapter)
 
-                if (firstVisiblePosition == 0) {
+                if (firstVisiblePosition == 0 && !adapter.autoScrollToTopTemporarilyDisabled()) {
                     recyclerView.scrollToPosition(0)
                 }
             }
@@ -162,6 +165,14 @@ open class DiffAdapter(
             return DiffUtil.calculateDiff(ListDiffCallback(ArrayList(items), newList), detectMoves)
         }
 
+    }
+
+    private fun autoScrollToTopTemporarilyDisabled(): Boolean {
+        return autoScrollToTopDisabledUntilTs > SystemClock.elapsedRealtime()
+    }
+
+    fun disableAutoScrollToTop(periodMs: Long) {
+        autoScrollToTopDisabledUntilTs = maxOf(autoScrollToTopDisabledUntilTs, SystemClock.elapsedRealtime() + periodMs)
     }
 
     private class ListDiffItemCallback<T> : DiffUtil.ItemCallback<ListItem>() {
